@@ -1,6 +1,8 @@
 package su.nightexpress.excellentcrates.crate;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Lidded;
@@ -10,12 +12,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.nexmedia.engine.api.config.JYML;
 import su.nexmedia.engine.api.manager.AbstractManager;
-import su.nexmedia.engine.api.menu.AbstractMenu;
+import su.nexmedia.engine.api.menu.impl.Menu;
+import su.nexmedia.engine.api.particle.SimpleParticle;
+import su.nexmedia.engine.api.placeholder.PlaceholderConstants;
 import su.nexmedia.engine.hooks.misc.VaultHook;
-import su.nexmedia.engine.utils.LocationUtil;
-import su.nexmedia.engine.utils.PDCUtil;
-import su.nexmedia.engine.utils.PlayerUtil;
-import su.nexmedia.engine.utils.TimeUtil;
+import su.nexmedia.engine.utils.*;
 import su.nightexpress.excellentcrates.ExcellentCrates;
 import su.nightexpress.excellentcrates.Keys;
 import su.nightexpress.excellentcrates.Perms;
@@ -28,57 +29,66 @@ import su.nightexpress.excellentcrates.api.hologram.HologramHandler;
 import su.nightexpress.excellentcrates.config.Config;
 import su.nightexpress.excellentcrates.config.Lang;
 import su.nightexpress.excellentcrates.crate.effect.CrateEffectModel;
-import su.nightexpress.excellentcrates.data.CrateUser;
+import su.nightexpress.excellentcrates.crate.impl.Crate;
+import su.nightexpress.excellentcrates.crate.impl.CrateReward;
+import su.nightexpress.excellentcrates.crate.impl.Rarity;
+import su.nightexpress.excellentcrates.crate.listener.CrateListener;
+import su.nightexpress.excellentcrates.crate.task.CrateEffectTask;
+import su.nightexpress.excellentcrates.data.impl.CrateUser;
 import su.nightexpress.excellentcrates.key.CrateKey;
 import su.nightexpress.excellentcrates.opening.PlayerOpeningData;
 import su.nightexpress.excellentcrates.opening.menu.OpeningMenu;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 
 public class CrateManager extends AbstractManager<ExcellentCrates> {
 
-    private Map<String, Crate> crates;
-    private Map<String, OpeningMenu> openings;
+    private final Map<String, Rarity> rarityMap;
+    private final Map<String, Crate> crateMap;
+    private final Map<String, OpeningMenu> openings;
+
+    private CrateEffectTask effectTask;
 
     public CrateManager(@NotNull ExcellentCrates plugin) {
         super(plugin);
+        this.rarityMap = new HashMap<>();
+        this.crateMap = new HashMap<>();
+        this.openings = new HashMap<>();
     }
 
     @Override
     public void onLoad() {
-        this.crates = new ConcurrentHashMap<>();
-        this.openings = new HashMap<>();
         this.plugin.getConfigManager().extractResources(Config.DIR_CRATES);
         this.plugin.getConfigManager().extractResources(Config.DIR_PREVIEWS);
         this.plugin.getConfigManager().extractResources(Config.DIR_OPENINGS);
 
+        JYML rarityConfig = JYML.loadOrExtract(plugin, Config.FILE_RARITY);
+        for (String rarId : rarityConfig.getSection("")) {
+            Rarity rarity = Rarity.read(rarityConfig, rarId, rarId);
+            this.rarityMap.put(rarity.getId(), rarity);
+        }
+        this.plugin.info("Loaded " + this.getRarityMap().size() + " rarities!");
+
         for (JYML cfg : JYML.loadAll(this.plugin.getDataFolder() + Config.DIR_OPENINGS, true)) {
-            try {
-                OpeningMenu opening = new OpeningMenu(plugin, cfg);
-                String id = cfg.getFile().getName().replace(".yml", "").toLowerCase();
-                this.openings.put(id, opening);
-            } catch (Exception e) {
-                this.plugin.error("Crate opening not loaded: " + cfg.getFile().getName());
-                e.printStackTrace();
-            }
+            OpeningMenu opening = new OpeningMenu(plugin, cfg);
+            String id = cfg.getFile().getName().replace(".yml", "").toLowerCase();
+            this.openings.put(id, opening);
         }
 
-        this.plugin.getServer().getScheduler().runTask(this.plugin, c -> {
+        this.plugin.runTask(task -> {
             for (JYML cfg : JYML.loadAll(plugin.getDataFolder() + Config.DIR_CRATES, true)) {
                 Crate crate = new Crate(plugin, cfg);
                 if (crate.load()) {
-                    this.crates.put(crate.getId(), crate);
+                    this.crateMap.put(crate.getId(), crate);
                 } else {
                     this.plugin.error("Crate not loaded: " + cfg.getFile().getName());
                 }
             }
             this.plugin.info("Loaded " + this.getCratesMap().size() + " crates.");
-            CrateEffectModel.start();
         });
+
+        this.effectTask = new CrateEffectTask(this.plugin);
+        this.effectTask.start();
 
         this.addListener(new CrateListener(this));
     }
@@ -88,41 +98,73 @@ public class CrateManager extends AbstractManager<ExcellentCrates> {
         PlayerOpeningData.PLAYERS.values().forEach(data -> data.stop(true));
         PlayerOpeningData.PLAYERS.clear();
 
-        CrateEffectModel.shutdown();
+        if (this.effectTask != null) {
+            this.effectTask.stop();
+            this.effectTask = null;
+            Arrays.asList(CrateEffectModel.values()).forEach(model -> model.getEffect().reset());
+        }
 
-        if (this.openings != null) {
-            this.openings.values().forEach(AbstractMenu::clear);
-            this.openings.clear();
-        }
-        if (this.crates != null) {
-            this.crates.values().forEach(Crate::clear);
-            this.crates.clear();
-            this.crates = null;
-        }
+        this.openings.values().forEach(Menu::clear);
+        this.openings.clear();
+        this.crateMap.values().forEach(Crate::clear);
+        this.crateMap.clear();
+        this.rarityMap.clear();
     }
 
-    @Nullable
-    public OpeningMenu getOpening(@NotNull String id) {
+    public @NotNull Map<String, Rarity> getRarityMap() {
+        return rarityMap;
+    }
+
+    public @NotNull Collection<Rarity> getRarities() {
+        return this.getRarityMap().values();
+    }
+
+    public @Nullable Rarity getRarity(@NotNull String id) {
+        return this.getRarityMap().get(id.toLowerCase());
+    }
+
+    public @NotNull Rarity getMostCommonRarity() {
+        return this.getRarities().stream().max(Comparator.comparingDouble(Rarity::getChance)).orElseThrow();
+    }
+
+    public @Nullable OpeningMenu getOpening(@NotNull String id) {
         return this.getOpeningsMap().get(id.toLowerCase());
     }
 
-    @NotNull
-    public Collection<OpeningMenu> getOpenings() {
+    public @NotNull Collection<OpeningMenu> getOpenings() {
         return this.getOpeningsMap().values();
     }
 
-    @NotNull
-    public Map<String, OpeningMenu> getOpeningsMap() {
+    public @NotNull Map<String, OpeningMenu> getOpeningsMap() {
         return openings;
     }
 
     public boolean create(@NotNull String id) {
+        id = StringUtil.lowerCaseUnderscore(id);
         if (this.getCrateById(id) != null) {
             return false;
         }
 
-        Crate crate = new Crate(this.plugin(), id);
+        JYML cfg = new JYML(this.plugin.getDataFolder() + Config.DIR_CRATES, id + ".yml");
+        Crate crate = new Crate(this.plugin, cfg);
+        crate.setName("<green><b>" + StringUtil.capitalizeUnderscored(crate.getId()) + " Crate");
+        crate.setOpeningConfig(null);
+        crate.setPreviewConfig(PlaceholderConstants.DEFAULT);
+
+        ItemStack item = new ItemStack(Material.PLAYER_HEAD);
+        ItemUtil.setSkullTexture(item, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTZkN2ZkYjUwZjE0YzczMWM3MjdiMGUwZDE4OWI2YTg3NDMxOWZjMGQ3OWM4YTA5OWFjZmM3N2M3YjJkOTE5NiJ9fX0=");
+        item.editMeta(meta -> meta.displayName(ComponentUtil.asComponent(crate.getName())));
+        crate.setItem(item);
+
+        crate.setBlockPushbackEnabled(true);
+        crate.setBlockHologramEnabled(false);
+        crate.setBlockHologramOffsetY(1.5D);
+        crate.setBlockHologramText(Arrays.asList("&c&l" + crate.getName().toUpperCase(), "&7Buy a key at &cwww.myserver.com"));
+        crate.setBlockEffectModel(CrateEffectModel.HELIX);
+        crate.setBlockEffectParticle(SimpleParticle.of(Particle.FLAME));
         crate.save();
+        crate.load();
+
         this.getCratesMap().put(crate.getId(), crate);
         return true;
     }
@@ -140,45 +182,33 @@ public class CrateManager extends AbstractManager<ExcellentCrates> {
         return this.getCrateByItem(item) != null;
     }
 
-    @NotNull
-    public List<String> getCrateIds(boolean keyOnly) {
-        return this.getCrates().stream().filter(crate -> !crate.getKeyIds().isEmpty() || !keyOnly).map(Crate::getId).toList();
+    public @NotNull List<String> getCrateIds(boolean keyOnly) {
+        return this.getCrateMap().stream().filter(crate -> !crate.getKeyIds().isEmpty() || !keyOnly).map(Crate::getId).toList();
     }
 
-    @NotNull
-    public Map<String, Crate> getCratesMap() {
-        return this.crates;
+    public @NotNull Map<String, Crate> getCratesMap() {
+        return this.crateMap;
     }
 
-    @NotNull
-    public Collection<Crate> getCrates() {
+    public @NotNull Collection<Crate> getCrateMap() {
         return this.getCratesMap().values();
     }
 
-    @Nullable
-    public Crate getCrateById(@NotNull String id) {
+    public @Nullable Crate getCrateById(@NotNull String id) {
         return this.getCratesMap().get(id.toLowerCase());
     }
 
-    @Nullable
-    public Crate getCrateByNPC(int id) {
-        return this.getCrates().stream().filter(crate -> crate.isAttachedNPC(id)).findFirst().orElse(null);
-    }
-
-    @Nullable
-    public Crate getCrateByItem(@NotNull ItemStack item) {
-        String id = PDCUtil.getStringData(item, Keys.CRATE_ID);
+    public @Nullable Crate getCrateByItem(@NotNull ItemStack item) {
+        String id = PDCUtil.getString(item, Keys.CRATE_ID).orElse(null);
         return id != null ? this.getCrateById(id) : null;
     }
 
-    @Nullable
-    public Crate getCrateByBlock(@NotNull Block block) {
+    public @Nullable Crate getCrateByBlock(@NotNull Block block) {
         return this.getCrateByLocation(block.getLocation());
     }
 
-    @Nullable
-    public Crate getCrateByLocation(@NotNull Location loc) {
-        return this.getCrates().stream().filter(crate -> crate.getBlockLocations().contains(loc)).findFirst().orElse(null);
+    public @Nullable Crate getCrateByLocation(@NotNull Location loc) {
+        return this.getCrateMap().stream().filter(crate -> crate.getBlockLocations().contains(loc)).findFirst().orElse(null);
     }
 
     public boolean spawnCrate(@NotNull Crate crate, @NotNull Location location) {
@@ -197,8 +227,13 @@ public class CrateManager extends AbstractManager<ExcellentCrates> {
         PlayerUtil.addItem(player, crateItem);
     }
 
-    public void interactCrate(@NotNull Player player, @NotNull Crate crate, @NotNull CrateClickAction action,
-        @Nullable ItemStack item, @Nullable Block block) {
+    public void interactCrate(
+        @NotNull Player player,
+        @NotNull Crate crate,
+        @NotNull CrateClickAction action,
+        @Nullable ItemStack item,
+        @Nullable Block block
+    ) {
 
         player.closeInventory();
 
@@ -210,7 +245,7 @@ public class CrateManager extends AbstractManager<ExcellentCrates> {
         if (action == CrateClickAction.CRATE_OPEN) {
             boolean isOpened = this.openCrate(player, crate, false, item, block);
             if (!isOpened && block != null && crate.isBlockPushbackEnabled()) {
-                player.setVelocity(player.getEyeLocation().getDirection().setY(Config.CRATE_PUSHBACK_Y).multiply(Config.CRATE_PUSHBACK_MULTIPLY));
+                player.setVelocity(player.getEyeLocation().getDirection().setY(Config.CRATE_PUSHBACK_Y.get()).multiply(Config.CRATE_PUSHBACK_MULTIPLY.get()));
             }
         }
     }
@@ -237,10 +272,17 @@ public class CrateManager extends AbstractManager<ExcellentCrates> {
         }
 
         CrateKey crateKey = this.plugin.getKeyManager().getKeys(player, crate).stream().findFirst().orElse(null);
-        if (!force) {
-            if (!crate.getKeyIds().isEmpty() && crateKey == null) {
+        if (!force && !crate.getKeyIds().isEmpty()) {
+            if (crateKey == null) {
                 plugin.getMessage(Lang.CRATE_OPEN_ERROR_NO_KEY).send(player);
                 return false;
+            }
+            if (!crateKey.isVirtual() && Config.CRATE_HOLD_KEY_TO_OPEN.get()) {
+                ItemStack main = player.getInventory().getItemInMainHand();
+                if (!this.plugin.getKeyManager().isKey(main, crateKey)) {
+                    plugin.getMessage(Lang.CRATE_OPEN_ERROR_NO_HOLD_KEY).send(player);
+                    return false;
+                }
             }
         }
 
@@ -290,27 +332,25 @@ public class CrateManager extends AbstractManager<ExcellentCrates> {
         String animationConfig = crate.getOpeningConfig();
         OpeningMenu opening = animationConfig == null ? null : this.getOpening(animationConfig);
         if (opening != null) {
-            // animation.open(player, crate);
+            //animation.open(player, crate);
             opening.open(player, crate);
         } else {
             CrateReward reward = crate.rollReward(player);
-            if (reward != null) {
-                reward.give(player);
+            reward.give(player);
 
-                CrateObtainRewardEvent rewardEvent = new CrateObtainRewardEvent(reward, player);
-                plugin.getPluginManager().callEvent(rewardEvent);
+            CrateObtainRewardEvent rewardEvent = new CrateObtainRewardEvent(reward, player);
+            plugin.getPluginManager().callEvent(rewardEvent);
 
-                if (block != null) {
-                    if (block.getState() instanceof Lidded lidded) {
-                        lidded.open();
-                        plugin.getServer().getScheduler().runTaskLater(plugin, lidded::close, 60L);
-                    }
-                    HologramHandler hologramHandler = plugin.getHologramHandler();
-                    if (hologramHandler != null) {
-                        Location location = LocationUtil.getCenter(block.getLocation().add(0, 2, 0), false);
-                        hologramHandler.createReward(player, reward, location);
-                        plugin.getServer().getScheduler().runTaskLater(plugin, c -> hologramHandler.removeReward(player), 60L);
-                    }
+            if (Config.CRATE_DISPLAY_REWARD_ABOVE_BLOCK.get() && block != null) {
+                if (block.getState() instanceof Lidded lidded) {
+                    lidded.open();
+                    plugin.getServer().getScheduler().runTaskLater(plugin, lidded::close, 60L);
+                }
+                HologramHandler hologramHandler = plugin.getHologramHandler();
+                if (hologramHandler != null) {
+                    Location location = LocationUtil.getCenter(block.getLocation().add(0, 2, 0), false);
+                    hologramHandler.createReward(player, reward, location);
+                    plugin.getServer().getScheduler().runTaskLater(plugin, c -> hologramHandler.removeReward(player), 60L);
                 }
             }
         }

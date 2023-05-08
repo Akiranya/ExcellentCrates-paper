@@ -18,7 +18,7 @@ public class Lang extends EngineLang {
 
     public static final LangKey COMMAND_GIVE_USAGE = new LangKey("Command.Give.Usage", "<player | *> <crateId> [amount]");
     public static final LangKey COMMAND_GIVE_DESC = new LangKey("Command.Give.Desc", "Gives crate(s) to a player.");
-    public static final LangKey COMMAND_GIVE_DONE = new LangKey("Command.Give.Done", "Given <gold>x" + Placeholders.GENERIC_AMOUNT + "</gold> of <gold>" + Placeholders.CRATE_NAME + "</gold> crate(s) to <gold>" + Placeholders.Player.DISPLAY_NAME + "</gold>.");
+    public static final LangKey COMMAND_GIVE_DONE = new LangKey("Command.Give.Done", "Given <gold>x" + Placeholders.GENERIC_AMOUNT + "</gold> of <gold>" + Placeholders.CRATE_NAME + "</gold> crate(s) to <gold>" + Placeholders.Player.NAME + "</gold>.");
     public static final LangKey COMMAND_GIVE_NOTIFY = new LangKey("Command.Give.Notify", "You recieved <gold>x" + Placeholders.GENERIC_AMOUNT + "</gold> of <gold>" + Placeholders.CRATE_NAME + "</gold>!");
 
     public static final LangKey COMMAND_KEY_DESC = new LangKey("Command.Key.Desc", "Manage or view player's crate keys.");
@@ -42,12 +42,13 @@ public class Lang extends EngineLang {
 
     public static final LangKey COMMAND_KEY_SHOW_DESC = new LangKey("Command.Key.Show.Desc", "Show amount of your or other player keys.");
     public static final LangKey COMMAND_KEY_SHOW_USAGE = new LangKey("Command.Key.Show.Usage", "[player]");
-    public static final LangKey COMMAND_KEY_SHOW_FORMAT_LIST = new LangKey("Command.Key.Show.Format.List", """
-                                                                                                           <!prefix:"false"!>
-                                                                                                           <gold><st>              </st><b>[</b></gold> <green>%player_name%</green> <yellow><b>Crate Keys</b></yellow> <gold><b>]</b><st>              </st>
-                                                                                                           <gray>
-                                                                                                           <gold>▸ <yellow>%key_name%: <gold>%amount%
-                                                                                                           """);
+    public static final LangKey COMMAND_KEY_SHOW_FORMAT_LIST = new LangKey("Command.Key.Show.Format.List",
+        """
+        <!prefix:"false"!>
+        <gold><st>              </st><b>[</b></gold> <green>%player_name%</green> <yellow><b>Crate Keys</b></yellow> <gold><b>]</b><st>              </st>
+        <gray>
+        <gold>▸ <yellow>%key_name%: <gold>%amount%
+        """);
 
     public static final LangKey COMMAND_PREVIEW_DESC = new LangKey("Command.Preview.Desc", "Open crate preview.");
     public static final LangKey COMMAND_PREVIEW_USAGE = new LangKey("Command.Preview.Usage", "<crateId> [player]");
@@ -71,13 +72,13 @@ public class Lang extends EngineLang {
     public static final LangKey CRATE_OPEN_ERROR_COOLDOWN_TEMPORARY = new LangKey("Crate.Open.Error.Cooldown.Temporary", "<red>You have to wait <gold>" + Placeholders.GENERIC_TIME + "</gold> before you can open <gold>" + Placeholders.CRATE_NAME + "</gold> again!");
     public static final LangKey CRATE_OPEN_ERROR_COOLDOWN_ONE_TIMED = new LangKey("Crate.Open.Error.Cooldown.OneTimed", "<red>You already have opened this crate, you can not open it more!");
     public static final LangKey CRATE_OPEN_ERROR_NO_KEY = new LangKey("Crate.Open.Error.NoKey", "<red>You don't have a key for this crate!");
+    public static final LangKey CRATE_OPEN_ERROR_NO_HOLD_KEY = new LangKey("Crate.Open.Error.NoHoldKey", "<red>You must hold a key to open this crate!");
     public static final LangKey CRATE_OPEN_ERROR_NO_REWARDS = new LangKey("Crate.Open.Error.NoRewards", "<red>This crate does not contains any rewards for you!");
     public static final LangKey CRATE_OPEN_ERROR_COST_MONEY = new LangKey("Crate.Open.Error.Cost.Money", "<red>You don't have enough money to open this crate!");
     public static final LangKey CRATE_OPEN_ERROR_COST_EXP = new LangKey("Crate.Open.Error.Cost.Exp", "<red>You don't have enough exp levels to open this crate!");
     public static final LangKey CRATE_OPEN_REWARD_INFO = new LangKey("Crate.Open.Reward.Info", "You got the <gold>" + Placeholders.REWARD_NAME + "</gold> reward from the <gold>" + Placeholders.CRATE_NAME + "</gold>!");
     public static final LangKey CRATE_OPEN_REWARD_BROADCAST = new LangKey("Crate.Open.Reward.Broadcast", "<gray>Player <green>" + Placeholders.Player.DISPLAY_NAME + "</green> just got the <gold>" + Placeholders.REWARD_NAME + "</gold> reward from the <gold>" + Placeholders.CRATE_NAME + "</gold>!");
     public static final LangKey CRATE_KEY_ERROR_INVALID = new LangKey("Crate.Key.Error.Invalid", "<red>Invalid key!");
-    public static final LangKey CRATE_PLACEHOLDER_COOLDOWN_BLANK = new LangKey("Crate.Placeholder.Cooldown.Blank", "Ready to open!");
 
     public static final LangKey MENU_INVALID = new LangKey("Menu.Invalid", "<red>Menu does not exist!");
 
@@ -100,6 +101,7 @@ public class Lang extends EngineLang {
     public static final LangKey EDITOR_REWARD_ENTER_ID = new LangKey("Editor.Reward.Enter.Id", "<gray>Enter <green>unique</green> reward <green>identifier</green>...");
     public static final LangKey EDITOR_REWARD_ENTER_DISPLAY_NAME = new LangKey("Editor.Reward.Enter.DisplayName", "<gray>Enter reward <green>display name</green>...");
     public static final LangKey EDITOR_REWARD_ENTER_CHANCE = new LangKey("Editor.Reward.Enter.Chance", "<gray>Enter win <green>chance</green>...");
+    public static final LangKey EDITOR_REWARD_ENTER_RARITY = new LangKey("Editor.Reward.Enter.Rarity", "<gray>Enter <green>[Rarity]");
     public static final LangKey EDITOR_REWARD_ENTER_COMMAND = new LangKey("Editor.Reward.Enter.Command", "<gray>Enter a <green>command</green>...");
     public static final LangKey EDITOR_REWARD_ENTER_PERMISSION = new LangKey("Editor.Reward.Enter.Permissions", "<gray>Enter a <green>permission</green>...");
     public static final LangKey EDITOR_REWARD_ENTER_WIN_LIMIT_AMOUNT = new LangKey("Editor.Reward.Enter.WinLimit.Amount", "<gray>Enter win limit <green>amount</green>...");

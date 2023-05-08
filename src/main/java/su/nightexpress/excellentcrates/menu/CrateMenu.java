@@ -18,7 +18,7 @@ import su.nightexpress.excellentcrates.ExcellentCrates;
 import su.nightexpress.excellentcrates.Placeholders;
 import su.nightexpress.excellentcrates.api.CrateClickAction;
 import su.nightexpress.excellentcrates.config.Config;
-import su.nightexpress.excellentcrates.crate.Crate;
+import su.nightexpress.excellentcrates.crate.impl.Crate;
 
 import java.util.function.UnaryOperator;
 
@@ -31,8 +31,7 @@ public class CrateMenu extends AbstractLoadableItem<ExcellentCrates> implements 
     }
 
     @Override
-    @NotNull
-    public UnaryOperator<String> replacePlaceholders() {
+    public @NotNull UnaryOperator<String> replacePlaceholders() {
         return str -> str
             .replace(Placeholders.MENU_ID, this.getId())
             ;
@@ -51,8 +50,7 @@ public class CrateMenu extends AbstractLoadableItem<ExcellentCrates> implements 
         }
     }
 
-    @NotNull
-    public AbstractMenu<?> getMenu() {
+    public @NotNull AbstractMenu<?> getMenu() {
         return this.menu;
     }
 
@@ -124,8 +122,10 @@ public class CrateMenu extends AbstractLoadableItem<ExcellentCrates> implements 
             if (crate == null) return;
 
             item.editMeta(meta -> {
+                //region Fix placeholder list
                 ItemUtil.replaceNameAndLore(meta, crate.replacePlaceholders(), str -> str.replace("%user_keys%", String.valueOf(plugin.getKeyManager().getKeysAmount(player, crate))));
                 ItemUtil.replacePlaceholderListComponent(meta, Placeholders.CRATE_ITEM_LORE, ItemUtil.getLore(crate.getItem()), true);
+                //endregion
             });
         }
 

@@ -7,16 +7,16 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import su.nightexpress.excellentcrates.ExcellentCrates;
 import su.nightexpress.excellentcrates.api.hologram.HologramHandler;
-import su.nightexpress.excellentcrates.crate.Crate;
-import su.nightexpress.excellentcrates.crate.CrateReward;
+import su.nightexpress.excellentcrates.crate.impl.Crate;
+import su.nightexpress.excellentcrates.crate.impl.CrateReward;
 
 import java.util.*;
 
 public class HologramHandlerHD implements HologramHandler {
 
-    private final ExcellentCrates            plugin;
-    private       Map<String, Set<Hologram>> holoCrates;
-    private Map<Player, Hologram>      holoRewards;
+    private final ExcellentCrates plugin;
+    private Map<String, Set<Hologram>> holoCrates;
+    private Map<Player, Hologram> holoRewards;
 
     public HologramHandlerHD(@NotNull ExcellentCrates plugin) {
         this.plugin = plugin;
@@ -68,7 +68,6 @@ public class HologramHandlerHD implements HologramHandler {
     public void createReward(@NotNull Player player, @NotNull CrateReward reward, @NotNull Location location) {
         this.removeReward(player);
 
-        // Crate crate = reward.getCrate();
         Hologram hologram = HologramsAPI.createHologram(this.plugin, location);
         hologram.appendTextLine(reward.getName());
         hologram.appendItemLine(reward.getPreview());

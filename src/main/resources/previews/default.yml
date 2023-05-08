@@ -1,57 +1,64 @@
 Title: Crate Preview
-Size: 36
+Size: 45
 
 Reward:
   Hide_Drained_Rewards: false
-  Name: '<yellow>%reward_preview_name%'
+  Name: '<#accaf4><b>%reward_preview_name%'
   Lore:
     Default:
-    - '<#cdf34d><b>Chance: <white>%reward_chance%%'
-#    - ''
-#    - '<#ec7063>Win Limit: <white>%reward_win_limit_amount%'
-#    - '<#ec7063>Win Cooldown: <white>%reward_win_limit_cooldown%'
-    - ''
-    - '%win_limit_amount%'
-    - '%win_limit_cooldown%'
-    - '%win_limit_drained%'
-    - ''
-    - '%reward_preview_lore%'
+      - '%reward_preview_lore%'
+      - ''
+      - '<#accaf4>▪ <#ddecee>Chance: <#accaf4>%reward_chance%%'
+      - '<#accaf4>▪ <#ddecee>Rarity: <#accaf4>%reward_rarity_name% <#ddecee>(&f%reward_rarity_chance%%<#ddecee>)'
+      - ''
+      - '%win_limit_amount%'
+      - '%win_limit_cooldown%'
+      - '%win_limit_drained%'
     Win_Limit:
       Amount:
-        - '<#ec7063>You can win this reward <white>%user_reward_win_limit_amount_left%</white> more times <gray>(of total <white>%reward_win_limit_amount%</white>)'
+        - '<#a5ff9a>[✓] <#ddecee>You can win this <#a5ff9a>%amount%<#ddecee> more times.'
       Cooldown:
-        - '<#ec7063>You can win this reward again in <white>%user_reward_win_limit_expire_in%'
+        - '<#ff9a9a>[!] <#ddecee>You can win this again in <#ff9a9a>%time%<#ddecee>.'
       Drained:
-        - '<#ec7063>You already won this reward, you can not win more.'
-  Slots: 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26
+        - '<#ff9a9a>[!] <#ddecee>Sorry, you can not win this <#ff9a9a>anymore<#ddecee>.'
+  Slots: 10,11,12,13,14,15,16,19,20,21,22,23,24,25,28,29,30,31,32,33,34
 
 Content:
+  panes_1:
+    Priority: 0
+    Item:
+      Material: BLACK_STAINED_GLASS_PANE
+    Slots: 1,2,3,5,6,7,9,18,27,17,26,35,37,38,39,40,41,42,43
+
+  panes_2:
+    Priority: 0
+    Item:
+      Material: GRAY_STAINED_GLASS_PANE
+    Slots: 0,4,8,36,44
+
+  return:
+    Priority: 5
+    Item:
+      Material: PLAYER_HEAD
+      Head_Texture: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2VkMWFiYTczZjYzOWY0YmM0MmJkNDgxOTZjNzE1MTk3YmUyNzEyYzNiOTYyYzk3ZWJmOWU5ZWQ4ZWZhMDI1In19fQ==
+      Name: '<#FF5733>(✕) <b>Exit'
+    Slots: 40
+    Type: CLOSE
+
   page_next:
-    Display:
-      default:
-        Item:
-          Material: 'PLAYER_HEAD'
-          Name: '<yellow><b>Next Page'
-          Head_Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjgyYWQxYjljYjRkZDIxMjU5YzBkNzVhYTMxNWZmMzg5YzNjZWY3NTJiZTM5NDkzMzgxNjRiYWM4NGE5NmUifX19'
-    Slots: 35
+    Slots: 26
     Type: PAGE_NEXT
+    Item:
+      Material: PLAYER_HEAD
+      Head_Texture: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjMyY2E2NjA1NmI3Mjg2M2U5OGY3ZjMyYmQ3ZDk0YzdhMGQ3OTZhZjY5MWM5YWMzYTkxMzYzMzEzNTIyODhmOSJ9fX0=
+      Name: '<#e6e4dd>(→) <white>Next Page'
+    Priority: 5
 
   page_previous:
-    Display:
-      default:
-        Item:
-          Material: 'PLAYER_HEAD'
-          Name: '<yellow><b>Previous Page'
-          Head_Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzdhZWU5YTc1YmYwZGY3ODk3MTgzMDE1Y2NhMGIyYTdkNzU1YzYzMzg4ZmYwMTc1MmQ1ZjQ0MTlmYzY0NSJ9fX0='
-    Slots: 27
+    Slots: 18
     Type: PAGE_PREVIOUS
-
-  exit:
-    Display:
-      default:
-        Item:
-          Material: PLAYER_HEAD
-          Name: '<white><b>Exit'
-          Head_Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTA2ZmJjNzU2MWVhZGNjZjdiYzZkNWE5NmM0NjM1MTRkNzlmZTY0ODlmZTE5OTJkZTQxNjBiYTI3MjA4ZjU1In19fQ=='
-    Slots: 31
-    Type: CLOSE
+    Item:
+      Material: PLAYER_HEAD
+      Head_Texture: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODY5NzFkZDg4MWRiYWY0ZmQ2YmNhYTkzNjE0NDkzYzYxMmY4Njk2NDFlZDU5ZDFjOTM2M2EzNjY2YTVmYTYifX19
+      Name: '<#e6e4dd>(←) <white>Previous Page'
+    Priority: 5

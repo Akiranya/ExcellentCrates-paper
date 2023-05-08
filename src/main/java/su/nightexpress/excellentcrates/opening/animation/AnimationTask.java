@@ -22,8 +22,7 @@ public class AnimationTask extends OpeningTask {
     protected boolean onStart() {
         if (this.parent.getStartDelay() > 0 && this.parent.getTickInterval() <= 0) {
             this.runTaskLater(ExcellentCratesAPI.PLUGIN, this.parent.getStartDelay());
-        }
-        else {
+        } else {
             this.runTaskTimer(ExcellentCratesAPI.PLUGIN, this.parent.getStartDelay(), this.parent.getTickInterval());
         }
         return true;
@@ -51,8 +50,7 @@ public class AnimationTask extends OpeningTask {
             for (int slot : this.parent.getSlots()) {
                 inventory.setItem(slot, item);
             }
-        }
-        else {
+        } else {
             for (int slot : this.parent.getSlots()) {
                 inventory.setItem(slot, Rnd.get(this.parent.getItems()));
             }
@@ -61,8 +59,7 @@ public class AnimationTask extends OpeningTask {
         inventory.getViewers().forEach(player -> MessageUtil.playSound(player, this.parent.getSoundTick()));
     }
 
-    @NotNull
-    public AnimationInfo getParent() {
+    public @NotNull AnimationInfo getParent() {
         return parent;
     }
 }

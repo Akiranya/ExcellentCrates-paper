@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
-import su.nightexpress.excellentcrates.crate.Crate;
+import su.nightexpress.excellentcrates.crate.impl.Crate;
 
 public abstract class CrateEvent extends Event {
 
@@ -22,19 +22,16 @@ public abstract class CrateEvent extends Event {
         return handlerList;
     }
 
-    @NotNull
     @Override
-    public HandlerList getHandlers() {
+    public @NotNull HandlerList getHandlers() {
         return handlerList;
     }
 
-    @NotNull
-    public Crate getCrate() {
+    public @NotNull Crate getCrate() {
         return this.crate;
     }
 
-    @NotNull
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return this.player;
     }
 }

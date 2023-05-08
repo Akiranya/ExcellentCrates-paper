@@ -5,37 +5,33 @@ import org.jetbrains.annotations.Nullable;
 import su.nexmedia.engine.NexPlugin;
 import su.nexmedia.engine.api.command.GeneralCommand;
 import su.nexmedia.engine.api.data.UserDataHolder;
-import su.nexmedia.engine.api.editor.EditorHolder;
-import su.nexmedia.engine.command.list.EditorSubCommand;
 import su.nexmedia.engine.command.list.ReloadSubCommand;
 import su.nexmedia.engine.hooks.Hooks;
-import su.nexmedia.engine.hooks.npc.CitizensHook;
 import su.nightexpress.excellentcrates.api.hologram.HologramHandler;
 import su.nightexpress.excellentcrates.command.*;
 import su.nightexpress.excellentcrates.config.Config;
 import su.nightexpress.excellentcrates.config.Lang;
 import su.nightexpress.excellentcrates.crate.CrateManager;
-import su.nightexpress.excellentcrates.data.CrateUser;
-import su.nightexpress.excellentcrates.data.CrateUserData;
+import su.nightexpress.excellentcrates.data.DataHandler;
 import su.nightexpress.excellentcrates.data.UserManager;
-import su.nightexpress.excellentcrates.editor.CrateEditorMenu;
-import su.nightexpress.excellentcrates.editor.CrateEditorType;
+import su.nightexpress.excellentcrates.data.impl.CrateUser;
+import su.nightexpress.excellentcrates.editor.EditorLocales;
+import su.nightexpress.excellentcrates.editor.EditorMainMenu;
 import su.nightexpress.excellentcrates.hooks.HookId;
-import su.nightexpress.excellentcrates.hooks.external.CrateCitizensListener;
-import su.nightexpress.excellentcrates.hooks.external.PlaceholderHook;
 import su.nightexpress.excellentcrates.hooks.hologram.HologramHandlerDecent;
 import su.nightexpress.excellentcrates.hooks.hologram.HologramHandlerHD;
+import su.nightexpress.excellentcrates.hooks.impl.PlaceholderHook;
 import su.nightexpress.excellentcrates.key.KeyManager;
 import su.nightexpress.excellentcrates.menu.MenuManager;
 
 import java.sql.SQLException;
 
-public class ExcellentCrates extends NexPlugin<ExcellentCrates> implements UserDataHolder<ExcellentCrates, CrateUser>, EditorHolder<ExcellentCrates, CrateEditorType> {
+public class ExcellentCrates extends NexPlugin<ExcellentCrates> implements UserDataHolder<ExcellentCrates, CrateUser> {
 
-    private CrateUserData dataHandler;
+    private DataHandler dataHandler;
     private UserManager userManager;
 
-    private CrateEditorMenu editor;
+    private EditorMainMenu editor;
     private KeyManager keyManager;
     private CrateManager crateManager;
     private MenuManager menuManager;
@@ -43,8 +39,7 @@ public class ExcellentCrates extends NexPlugin<ExcellentCrates> implements UserD
     private HologramHandler hologramHandler;
 
     @Override
-    @NotNull
-    protected ExcellentCrates getSelf() {
+    protected @NotNull ExcellentCrates getSelf() {
         return this;
     }
 
@@ -89,14 +84,13 @@ public class ExcellentCrates extends NexPlugin<ExcellentCrates> implements UserD
 
     @Override
     public void loadConfig() {
-        Config.load(this);
         this.getConfig().initializeOptions(Config.class);
     }
 
     @Override
     public void loadLang() {
         this.getLangManager().loadMissing(Lang.class);
-        this.getLangManager().setupEditorEnum(CrateEditorType.class);
+        this.getLangManager().loadEditor(EditorLocales.class);
         this.getLang().saveChanges();
     }
 
@@ -111,13 +105,11 @@ public class ExcellentCrates extends NexPlugin<ExcellentCrates> implements UserD
         if (Hooks.hasPlaceholderAPI()) {
             PlaceholderHook.setup();
         }
-        if (Hooks.hasCitizens()) {
-            CitizensHook.addListener(this, new CrateCitizensListener(this));
-        }
     }
 
     @Override
     public void registerCommands(@NotNull GeneralCommand<ExcellentCrates> mainCommand) {
+        mainCommand.addChildren(new EditorCommand(this));
         mainCommand.addChildren(new DropCommand(this));
         mainCommand.addChildren(new ForceOpenCommand(this));
         mainCommand.addChildren(new GiveCommand(this));
@@ -127,7 +119,7 @@ public class ExcellentCrates extends NexPlugin<ExcellentCrates> implements UserD
         mainCommand.addChildren(new ResetCooldownCommand(this));
         mainCommand.addChildren(new ResetLimitCommand(this));
         mainCommand.addChildren(new ReloadSubCommand<>(this, Perms.COMMAND_RELOAD));
-        mainCommand.addChildren(new EditorSubCommand<>(this, this, Perms.COMMAND_EDITOR));
+        //mainCommand.addChildren(new EditorSubCommand<>(this, this, Perms.COMMAND_EDITOR));
     }
 
     @Override
@@ -138,7 +130,7 @@ public class ExcellentCrates extends NexPlugin<ExcellentCrates> implements UserD
     @Override
     public boolean setupDataHandlers() {
         try {
-            this.dataHandler = CrateUserData.getInstance(this);
+            this.dataHandler = DataHandler.getInstance(this);
             this.dataHandler.setup();
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -152,42 +144,34 @@ public class ExcellentCrates extends NexPlugin<ExcellentCrates> implements UserD
     }
 
     @Override
-    @NotNull
-    public CrateUserData getData() {
+    public @NotNull DataHandler getData() {
         return this.dataHandler;
     }
 
-    @NotNull
     @Override
-    public UserManager getUserManager() {
+    public @NotNull UserManager getUserManager() {
         return userManager;
     }
 
-    @NotNull
-    public KeyManager getKeyManager() {
+    public @NotNull KeyManager getKeyManager() {
         return keyManager;
     }
 
-    @NotNull
-    public CrateManager getCrateManager() {
+    public @NotNull CrateManager getCrateManager() {
         return this.crateManager;
     }
 
-    @NotNull
-    public MenuManager getMenuManager() {
+    public @NotNull MenuManager getMenuManager() {
         return menuManager;
     }
 
-    @Nullable
-    public HologramHandler getHologramHandler() {
+    public @Nullable HologramHandler getHologramHandler() {
         return hologramHandler;
     }
 
-    @Override
-    @NotNull
-    public CrateEditorMenu getEditor() {
+    public @NotNull EditorMainMenu getEditor() {
         if (this.editor == null) {
-            this.editor = new CrateEditorMenu(this);
+            this.editor = new EditorMainMenu(this);
         }
         return this.editor;
     }

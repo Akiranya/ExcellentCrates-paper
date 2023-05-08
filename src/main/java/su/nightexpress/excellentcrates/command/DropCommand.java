@@ -6,14 +6,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import su.nexmedia.engine.api.command.AbstractCommand;
-import su.nexmedia.engine.utils.LocationUtil;
+import su.nexmedia.engine.utils.CollectionsUtil;
 import su.nexmedia.engine.utils.NumberUtil;
 import su.nexmedia.engine.utils.StringUtil;
 import su.nightexpress.excellentcrates.ExcellentCrates;
 import su.nightexpress.excellentcrates.Perms;
 import su.nightexpress.excellentcrates.Placeholders;
 import su.nightexpress.excellentcrates.config.Lang;
-import su.nightexpress.excellentcrates.crate.Crate;
+import su.nightexpress.excellentcrates.crate.impl.Crate;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,14 +26,12 @@ public class DropCommand extends AbstractCommand<ExcellentCrates> {
     }
 
     @Override
-    @NotNull
-    public String getUsage() {
+    public @NotNull String getUsage() {
         return plugin.getMessage(Lang.COMMAND_DROP_USAGE).getLocalized();
     }
 
     @Override
-    @NotNull
-    public String getDescription() {
+    public @NotNull String getDescription() {
         return plugin.getMessage(Lang.COMMAND_DROP_DESC).getLocalized();
     }
 
@@ -43,13 +41,12 @@ public class DropCommand extends AbstractCommand<ExcellentCrates> {
     }
 
     @Override
-    @NotNull
-    public List<String> getTab(@NotNull Player player, int arg, @NotNull String[] args) {
+    public @NotNull List<String> getTab(@NotNull Player player, int arg, @NotNull String[] args) {
         if (arg == 1) {
             return plugin.getCrateManager().getCrateIds(false);
         }
         if (arg == 2) {
-            return LocationUtil.getWorldNames();
+            return CollectionsUtil.worldNames();
         }
         if (arg == 3) {
             return Arrays.asList("<x>", NumberUtil.format(player.getLocation().getX()));

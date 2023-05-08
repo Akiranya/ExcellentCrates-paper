@@ -4,7 +4,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import su.nexmedia.engine.api.command.AbstractCommand;
-import su.nexmedia.engine.utils.PlayerUtil;
+import su.nexmedia.engine.utils.CollectionsUtil;
 import su.nightexpress.excellentcrates.ExcellentCrates;
 import su.nightexpress.excellentcrates.Perms;
 import su.nightexpress.excellentcrates.Placeholders;
@@ -21,14 +21,12 @@ public class MenuCommand extends AbstractCommand<ExcellentCrates> {
     }
 
     @Override
-    @NotNull
-    public String getUsage() {
+    public @NotNull String getUsage() {
         return plugin.getMessage(Lang.COMMAND_MENU_USAGE).getLocalized();
     }
 
     @Override
-    @NotNull
-    public String getDescription() {
+    public @NotNull String getDescription() {
         return plugin.getMessage(Lang.COMMAND_MENU_DESC).getLocalized();
     }
 
@@ -38,13 +36,12 @@ public class MenuCommand extends AbstractCommand<ExcellentCrates> {
     }
 
     @Override
-    @NotNull
-    public List<String> getTab(@NotNull Player player, int arg, @NotNull String[] args) {
+    public @NotNull List<String> getTab(@NotNull Player player, int arg, @NotNull String[] args) {
         if (arg == 1) {
             return plugin.getMenuManager().getMenuIds();
         }
         if (arg == 2 && player.hasPermission(Perms.COMMAND_KEY_SHOW_OTHERS)) {
-            return PlayerUtil.getPlayerNames();
+            return CollectionsUtil.playerNames(player);
         }
         return super.getTab(player, arg, args);
     }

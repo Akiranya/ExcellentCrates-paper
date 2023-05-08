@@ -11,17 +11,17 @@ public class SliderInfo {
         INHERITANCE, INDEPENDENT
     }
 
-    private final String          id;
+    private final String id;
     private final TaskStartAction startAction;
-    private final double          startChance;
-    private final long          startDelay;
-    private final int    rollTimes;
+    private final double startChance;
+    private final long startDelay;
+    private final int rollTimes;
     private final long rollTickInterval;
-    private final long  rollSlowdownEvery;
-    private final long  rollSlowdownTicks;
+    private final long rollSlowdownEvery;
+    private final long rollSlowdownTicks;
     private final Sound soundTick;
     private final int[] slots;
-    private final Mode  mode;
+    private final Mode mode;
     private final int[] winSlots;
 
     public SliderInfo(
@@ -52,13 +52,11 @@ public class SliderInfo {
         this.winSlots = winSlots;
     }
 
-    @NotNull
-    public String getId() {
+    public @NotNull String getId() {
         return id;
     }
 
-    @NotNull
-    public TaskStartAction getStartAction() {
+    public @NotNull TaskStartAction getStartAction() {
         return startAction;
     }
 
@@ -86,8 +84,7 @@ public class SliderInfo {
         return rollSlowdownEvery;
     }
 
-    @Nullable
-    public Sound getSoundTick() {
+    public @Nullable Sound getSoundTick() {
         return soundTick;
     }
 
@@ -95,8 +92,7 @@ public class SliderInfo {
         return slots;
     }
 
-    @NotNull
-    public SliderInfo.Mode getSlotsMode() {
+    public @NotNull SliderInfo.Mode getSlotsMode() {
         return mode;
     }
 

@@ -3,57 +3,49 @@ Size: 36
 
 Crates:
   virtual:
-    Display:
-      default:
-        Item:
-          Material: PLAYER_HEAD
-          Head_Texture: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDI0ODZmMjg1OTE2OWM4YmZiNjZhNjg3YmNmNGM2OTkzNDE3ZjU4NGI1OGJiZmRiMzM2NDY0ZDUyMDcxY2NkNyJ9fX0=
-          Name: '%crate_name%'
-          Lore:
-            - '%crate_item_lore%'
-            - '<gray>'
-            - '<blue>▸ <gray>You have: <blue>%user_keys% keys'
-            - '<blue>▸ <gray>Money Cost: <blue>$%crate_opening_cost_money%'
-            - '<blue>▸ <gray>Exp Cost: <blue>%crate_opening_cost_exp%'
-            - '<gray>'
-            - '<white>Left Click <gray>to preview'
-            - '<white>Right Click <gray>to open'
+    Item:
+      Material: PLAYER_HEAD
+      Head_Texture: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDI0ODZmMjg1OTE2OWM4YmZiNjZhNjg3YmNmNGM2OTkzNDE3ZjU4NGI1OGJiZmRiMzM2NDY0ZDUyMDcxY2NkNyJ9fX0=
+      Name: '%crate_name%'
+      Lore:
+        - '%crate_item_lore%'
+        - '<gray>'
+        - '<blue>▸ <gray>You have: <blue>%user_keys% keys'
+        - '<blue>▸ <gray>Money Cost: <blue>$%crate_opening_cost_money%'
+        - '<blue>▸ <gray>Exp Cost: <blue>%crate_opening_cost_exp%'
+        - '<gray>'
+        - '<white>Left Click <gray>to preview'
+        - '<white>Right Click <gray>to open'
     Slots: 13
 
 Content:
   exit:
-    Display:
-      default:
-        Item:
-          Material: 'BARRIER'
-          Name: '<red><b>Close'
+    Item:
+      Material: 'BARRIER'
+      Name: '<red><b>Close'
     Slots: 31
     Type: CLOSE
 
   info:
-    Display:
-      default:
-        Item:
-          Material: 'BOOK'
-          Name: '<yellow><u>What is it?'
-          Lore:
-            - '<gold>This is special crates menu,'
-            - '<gold>where you can open creates using'
-            - '<gold>virtual keys, which you can buy'
-            - '<gold>in our store.'
+    Item:
+      Material: 'BOOK'
+      Name: '<yellow><u>What is it?'
+      Lore:
+        - '<gold>This is special crates menu,'
+        - '<gold>where you can open creates using'
+        - '<gold>virtual keys, which you can buy'
+        - '<gold>in our store.'
     Slots: 28
     Type: NONE
 
   store:
-    Display:
-      default:
-        Item:
-          Material: 'EMERALD'
-          Name: '<green><u>Store'
-          Lore:
-            - '<light_purple>Buy crate keys in our store'
-            - '<light_purple>and use them in this menu!'
-            - '<gray>'
-            - '<aqua>Our Store: <green>www.store.mycraft.com'
+    Item:
+      Material: 'EMERALD'
+      Name: '<green><u>Store'
+      Lore:
+        - '<light_purple>Buy crate keys in our store'
+        - '<light_purple>and use them in this menu!'
+        - '<gray>'
+        - '<aqua>Our Store: <green>www.store.mycraft.com'
     Slots: 34
     Type: NONE

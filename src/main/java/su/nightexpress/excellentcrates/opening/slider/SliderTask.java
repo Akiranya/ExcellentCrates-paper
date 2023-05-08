@@ -9,7 +9,8 @@ import su.nexmedia.engine.utils.random.Rnd;
 import su.nightexpress.excellentcrates.ExcellentCratesAPI;
 import su.nightexpress.excellentcrates.Keys;
 import su.nightexpress.excellentcrates.api.event.CrateObtainRewardEvent;
-import su.nightexpress.excellentcrates.crate.CrateReward;
+import su.nightexpress.excellentcrates.config.Config;
+import su.nightexpress.excellentcrates.crate.impl.CrateReward;
 import su.nightexpress.excellentcrates.opening.PlayerOpeningData;
 import su.nightexpress.excellentcrates.opening.task.OpeningTask;
 
@@ -86,7 +87,7 @@ public class SliderTask extends OpeningTask {
             if (reward == null) return;
 
             ItemStack preview = reward.getPreview();
-            PDCUtil.setData(preview, Keys.REWARD_ID, reward.getId());
+            PDCUtil.set(preview, Keys.REWARD_ID, reward.getId());
 
             for (int index = slots.length - 1; index > -1; index--) {
                 int slot = slots[index];
@@ -103,7 +104,7 @@ public class SliderTask extends OpeningTask {
                 if (reward == null) return;
 
                 ItemStack preview = reward.getPreview();
-                PDCUtil.setData(preview, Keys.REWARD_ID, reward.getId());
+                PDCUtil.set(preview, Keys.REWARD_ID, reward.getId());
 
                 this.data.getInventory().setItem(slot, preview);
             }
@@ -127,12 +128,12 @@ public class SliderTask extends OpeningTask {
     private void maybeClose() {
         if (!this.getData().isCompleted()) return;
 
-        ExcellentCratesAPI.PLUGIN.getScheduler().runTaskLater(ExcellentCratesAPI.PLUGIN, c -> {
+        ExcellentCratesAPI.PLUGIN.runTaskLater(task -> {
             Inventory opened = this.getData().getPlayer().getOpenInventory().getTopInventory();
             if (this.getData().getInventory().equals(opened)) {
                 this.getData().getPlayer().closeInventory();
             }
-        }, 20L);
+        }, Config.CRATE_OPENING_CLOSE_TIME.get());
     }
 
     private void checkRewards() {
@@ -140,7 +141,7 @@ public class SliderTask extends OpeningTask {
             ItemStack item = this.data.getInventory().getItem(slot);
             if (item == null || item.getType().isAir()) continue;
 
-            String rewardId = PDCUtil.getStringData(item, Keys.REWARD_ID);
+            String rewardId = PDCUtil.getString(item, Keys.REWARD_ID).orElse(null);
             if (rewardId == null) continue;
 
             CrateReward reward = this.data.getCrate().getReward(rewardId);
@@ -153,8 +154,7 @@ public class SliderTask extends OpeningTask {
         }
     }
 
-    @NotNull
-    public SliderInfo getParent() {
+    public @NotNull SliderInfo getParent() {
         return parent;
     }
 }

@@ -48,12 +48,11 @@ dependencies {
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
     compileOnly("com.github.decentsoftware-eu:decentholograms:2.2.5")
     compileOnly("com.gmail.filoghost.holographicdisplays:holographicdisplays-api:2.4.0")
-    compileOnly("net.citizensnpcs:citizens-main:2.0.29-SNAPSHOT")
-    compileOnly("me.clip:placeholderapi:2.10.10")
+    compileOnly("me.clip:placeholderapi:2.11.3")
 }
 
 group = "su.nightexpress.excellentcrates"
-version = "4.1.6".decorateVersion()
+version = "4.2.0".decorateVersion()
 description = "ExcellentCrates"
 
 bukkit {

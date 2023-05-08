@@ -4,13 +4,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import su.nexmedia.engine.api.command.AbstractCommand;
-import su.nexmedia.engine.utils.PlayerUtil;
+import su.nexmedia.engine.api.placeholder.PlaceholderConstants;
+import su.nexmedia.engine.utils.CollectionsUtil;
 import su.nexmedia.engine.utils.StringUtil;
 import su.nightexpress.excellentcrates.ExcellentCrates;
 import su.nightexpress.excellentcrates.Perms;
 import su.nightexpress.excellentcrates.Placeholders;
 import su.nightexpress.excellentcrates.config.Lang;
-import su.nightexpress.excellentcrates.crate.Crate;
+import su.nightexpress.excellentcrates.crate.impl.Crate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,16 +25,15 @@ public class GiveCommand extends AbstractCommand<ExcellentCrates> {
     }
 
     @Override
-    @NotNull
-    public String getUsage() {
+    public @NotNull String getUsage() {
         return plugin.getMessage(Lang.COMMAND_GIVE_USAGE).getLocalized();
     }
 
     @Override
-    @NotNull
-    public String getDescription() {
+    public @NotNull String getDescription() {
         return plugin.getMessage(Lang.COMMAND_GIVE_DESC).getLocalized();
     }
+
 
     @Override
     public boolean isPlayerOnly() {
@@ -41,11 +41,10 @@ public class GiveCommand extends AbstractCommand<ExcellentCrates> {
     }
 
     @Override
-    @NotNull
-    public List<String> getTab(@NotNull Player player, int arg, @NotNull String[] args) {
+    public @NotNull List<String> getTab(@NotNull Player player, int arg, @NotNull String[] args) {
         if (arg == 1) {
-            List<String> list = new ArrayList<>(PlayerUtil.getPlayerNames());
-            list.add(0, Placeholders.WILDCARD);
+            List<String> list = new ArrayList<>(CollectionsUtil.playerNames(player));
+            list.add(0, PlaceholderConstants.WILDCARD);
             return list;
         }
         if (arg == 2) {
@@ -74,12 +73,11 @@ public class GiveCommand extends AbstractCommand<ExcellentCrates> {
             return;
         }
 
-        if (pName.equalsIgnoreCase(Placeholders.WILDCARD)) {
+        if (pName.equalsIgnoreCase(PlaceholderConstants.WILDCARD)) {
             for (Player player : plugin.getServer().getOnlinePlayers()) {
                 plugin.getCrateManager().giveCrate(player, crate, amount);
             }
-        }
-        else {
+        } else {
             Player player = plugin.getServer().getPlayer(pName);
             if (player == null) {
                 this.errorPlayer(sender);

@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.nightexpress.excellentcrates.crate.Crate;
+import su.nightexpress.excellentcrates.crate.impl.Crate;
 import su.nightexpress.excellentcrates.opening.animation.AnimationTask;
 import su.nightexpress.excellentcrates.opening.slider.SliderTask;
 
@@ -18,8 +18,8 @@ public final class PlayerOpeningData {
 
     private final Player player;
     private final Crate crate;
-    private final Inventory                  inventory;
-    private final Map<String, SliderTask>    sliderTasks;
+    private final Inventory inventory;
+    private final Map<String, SliderTask> sliderTasks;
     private final Map<String, AnimationTask> animationTasks;
 
     private PlayerOpeningData(@NotNull Player player, @NotNull Crate crate, @NotNull Inventory inventory) {
@@ -30,8 +30,7 @@ public final class PlayerOpeningData {
         this.animationTasks = new LinkedHashMap<>();
     }
 
-    @NotNull
-    public static PlayerOpeningData create(@NotNull Player player, @NotNull Crate crate, @NotNull Inventory inventory) {
+    public static @NotNull PlayerOpeningData create(@NotNull Player player, @NotNull Crate crate, @NotNull Inventory inventory) {
         PlayerOpeningData has = get(player);
         if (has != null) throw new IllegalStateException("Player is already opening a crate!");
 
@@ -40,8 +39,7 @@ public final class PlayerOpeningData {
         return data;
     }
 
-    @Nullable
-    public static PlayerOpeningData get(@NotNull Player player) {
+    public static @Nullable PlayerOpeningData get(@NotNull Player player) {
         return PLAYERS.get(player);
     }
 
@@ -70,28 +68,23 @@ public final class PlayerOpeningData {
         return this.getSliderTasks().values().stream().allMatch(task -> task.isStarted() && task.isCancelled());
     }
 
-    @NotNull
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 
-    @NotNull
-    public Crate getCrate() {
+    public @NotNull Crate getCrate() {
         return crate;
     }
 
-    @NotNull
-    public Inventory getInventory() {
+    public @NotNull Inventory getInventory() {
         return inventory;
     }
 
-    @NotNull
-    public Map<String, SliderTask> getSliderTasks() {
+    public @NotNull Map<String, SliderTask> getSliderTasks() {
         return sliderTasks;
     }
 
-    @NotNull
-    public Map<String, AnimationTask> getAnimationTasks() {
+    public @NotNull Map<String, AnimationTask> getAnimationTasks() {
         return animationTasks;
     }
 }

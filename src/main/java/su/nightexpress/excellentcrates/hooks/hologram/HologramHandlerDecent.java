@@ -5,18 +5,17 @@ import eu.decentsoftware.holograms.api.holograms.Hologram;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import su.nexmedia.engine.utils.random.Rnd;
 import su.nightexpress.excellentcrates.ExcellentCrates;
 import su.nightexpress.excellentcrates.api.hologram.HologramHandler;
-import su.nightexpress.excellentcrates.crate.Crate;
-import su.nightexpress.excellentcrates.crate.CrateReward;
+import su.nightexpress.excellentcrates.crate.impl.Crate;
+import su.nightexpress.excellentcrates.crate.impl.CrateReward;
 
 import java.util.*;
 
 public class HologramHandlerDecent implements HologramHandler {
 
     private Map<String, Set<Hologram>> holoCrates;
-    private Map<Player, Hologram>      holoRewards;
+    private Map<Player, Hologram> holoRewards;
 
     public HologramHandlerDecent(@NotNull ExcellentCrates plugin) {
         this.holoCrates = new HashMap<>();
@@ -44,13 +43,13 @@ public class HologramHandlerDecent implements HologramHandler {
 
     @Override
     public void create(@NotNull Crate crate) {
-        String id = "crate_" + crate.getId();
+        //String id = "crate_" + crate.getId();
 
         crate.getBlockLocations().forEach(loc -> {
             Set<Hologram> holograms = this.holoCrates.computeIfAbsent(crate.getId(), set -> new HashSet<>());
 
             int size = holograms.size();
-            Hologram hologram = DHAPI.createHologram(id + size, crate.getBlockHologramLocation(loc), crate.getBlockHologramText());
+            Hologram hologram = DHAPI.createHologram(UUID.randomUUID().toString(), crate.getBlockHologramLocation(loc), crate.getBlockHologramText());
             holograms.add(hologram);
         });
     }
@@ -67,8 +66,7 @@ public class HologramHandlerDecent implements HologramHandler {
     public void createReward(@NotNull Player player, @NotNull CrateReward reward, @NotNull Location location) {
         this.removeReward(player);
 
-        Crate crate = reward.getCrate();
-        Hologram hologram = DHAPI.createHologram(crate.getId() + "_" + reward.getId() + Rnd.get(100), location);
+        Hologram hologram = DHAPI.createHologram(UUID.randomUUID().toString(), location);
         DHAPI.addHologramLine(hologram, reward.getName());
         DHAPI.addHologramLine(hologram, "#ICON: " + reward.getPreview().getType().name());
         hologram.hideAll();

@@ -36,8 +36,7 @@ public abstract class OpeningTask extends BukkitRunnable {
 
     protected abstract boolean onStop(boolean force);
 
-    @NotNull
-    public PlayerOpeningData getData() {
+    public @NotNull PlayerOpeningData getData() {
         return data;
     }
 

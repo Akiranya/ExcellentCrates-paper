@@ -2,8 +2,14 @@ package su.nightexpress.excellentcrates;
 
 public class Placeholders extends su.nexmedia.engine.utils.Placeholders {
 
+    public static final String URL_WIKI = "https://github.com/nulli0n/ExcellentCrates-spigot/wiki";
+
     public static final String GENERIC_AMOUNT = "%amount%";
     public static final String GENERIC_TIME = "%time%";
+
+    public static final String RARITY_ID = "%rarity_id%";
+    public static final String RARITY_NAME = "%rarity_name%";
+    public static final String RARITY_CHANCE = "%rarity_chance%";
 
     public static final String CRATE_ID = "%crate_id%";
     public static final String CRATE_NAME = "%crate_name%";
@@ -11,7 +17,6 @@ public class Placeholders extends su.nexmedia.engine.utils.Placeholders {
     public static final String CRATE_PREVIEW_CONFIG = "%crate_preview_config%";
     public static final String CRATE_PERMISSION = "%crate_permission%";
     public static final String CRATE_PERMISSION_REQUIRED = "%crate_permission_required%";
-    public static final String CRATE_ATTACHED_CITIZENS = "%crate_attached_citizens%";
     public static final String CRATE_OPENING_COOLDOWN = "%crate_opening_cooldown%";
     public static final String CRATE_OPENING_COST_MONEY = "%crate_opening_cost_money%";
     public static final String CRATE_OPENING_COST_EXP = "%crate_opening_cost_exp%";
@@ -37,6 +42,8 @@ public class Placeholders extends su.nexmedia.engine.utils.Placeholders {
     public static final String REWARD_ID = "%reward_id%";
     public static final String REWARD_NAME = "%reward_name%";
     public static final String REWARD_CHANCE = "%reward_chance%";
+    public static final String REWARD_RARITY_NAME = "%reward_rarity_name%";
+    public static final String REWARD_RARITY_CHANCE = "%reward_rarity_chance%";
     public static final String REWARD_BROADCAST = "%reward_broadcast%";
     public static final String REWARD_PREVIEW_NAME = "%reward_preview_name%";
     public static final String REWARD_PREVIEW_LORE = "%reward_preview_lore%";
@@ -44,7 +51,4 @@ public class Placeholders extends su.nexmedia.engine.utils.Placeholders {
     public static final String REWARD_WIN_LIMIT_AMOUNT = "%reward_win_limit_amount%";
     public static final String REWARD_WIN_LIMIT_COOLDOWN = "%reward_win_limit_cooldown%";
     public static final String REWARD_IGNORED_FOR_PERMISSIONS = "%reward_ignored_for_permissions%";
-
-    public static final String USER_REWARD_WIN_LIMIT_AMOUNT_LEFT = "%user_reward_win_limit_amount_left%";
-    public static final String USER_REWARD_WIN_LIMIT_EXPIRE_IN = "%user_reward_win_limit_expire_in%";
 }

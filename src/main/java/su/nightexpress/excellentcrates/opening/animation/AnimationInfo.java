@@ -10,23 +10,28 @@ import java.util.List;
 
 public class AnimationInfo {
 
-    private final String          id;
+    private final String id;
     private final TaskStartAction startAction;
-    private final long            startDelay;
-    private final int[]           slots;
-    private final Mode            mode;
-    private final long            tickInterval;
-    private final Sound           soundTick;
+    private final long startDelay;
+    private final int[] slots;
+    private final Mode mode;
+    private final long tickInterval;
+    private final Sound soundTick;
     private final List<ItemStack> items;
 
     public enum Mode {
         SINGLE, TOGETHER
     }
 
-    public AnimationInfo(@NotNull String id, @NotNull TaskStartAction startAction,
-                         long startDelay, int[] slots, @NotNull Mode mode, long tickInterval,
-                         @Nullable Sound soundTick,
-                         @NotNull List<ItemStack> items) {
+    public AnimationInfo(
+        @NotNull String id,
+        @NotNull TaskStartAction startAction,
+        long startDelay,
+        int[] slots,
+        @NotNull Mode mode,
+        long tickInterval,
+        @Nullable Sound soundTick,
+        @NotNull List<ItemStack> items) {
         this.id = id.toLowerCase();
         this.startAction = startAction;
         this.slots = slots;
@@ -37,13 +42,11 @@ public class AnimationInfo {
         this.items = items;
     }
 
-    @NotNull
-    public String getId() {
+    public @NotNull String getId() {
         return id;
     }
 
-    @NotNull
-    public TaskStartAction getStartAction() {
+    public @NotNull TaskStartAction getStartAction() {
         return startAction;
     }
 
@@ -55,8 +58,7 @@ public class AnimationInfo {
         return slots;
     }
 
-    @NotNull
-    public Mode getMode() {
+    public @NotNull Mode getMode() {
         return mode;
     }
 
@@ -64,8 +66,7 @@ public class AnimationInfo {
         return tickInterval;
     }
 
-    @Nullable
-    public Sound getSoundTick() {
+    public @Nullable Sound getSoundTick() {
         return soundTick;
     }
 

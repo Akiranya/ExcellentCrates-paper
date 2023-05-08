@@ -1,31 +1,5 @@
 Plugin:
-  Command_Aliases: 'excellentcrates,ecrates,crates,crate,case,cases'
-  Language: en
-  Name: 'ExcellentCrates'
-  Prefix: '<yellow>%plugin_name% <dark_gray>» <gray>'
+  Command_Aliases: 'excellentcrates,xcrate'
 
 Database:
-  Auto_Save_Interval: 20
-  Sync_Interval: -1
-  Type: SQLITE
   Table_Prefix: 'excellentcrates'
-  MySQL:
-    Username: root
-    Password: root
-    Host: localhost
-    Database: minecraft
-  SQLite:
-    FileName: data.db
-  Purge:
-    Enabled: false
-    For_Period: 60
-
-Crate:
-  Click_Actions:
-    LEFT: CRATE_PREVIEW
-    RIGHT: CRATE_OPEN
-    SHIFT_LEFT: null
-    SHIFT_RIGHT: null
-  Block_Pushback:
-    Y: -0.4
-    Multiply: -1.25

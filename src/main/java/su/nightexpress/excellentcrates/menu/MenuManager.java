@@ -26,8 +26,7 @@ public class MenuManager extends AbstractManager<ExcellentCrates> {
             try {
                 CrateMenu menu = new CrateMenu(plugin, cfg);
                 this.getMenuMap().put(menu.getId(), menu);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 plugin.error("Could not load crate menu: '" + cfg.getFile().getName() + "'");
                 ex.printStackTrace();
             }
@@ -44,23 +43,19 @@ public class MenuManager extends AbstractManager<ExcellentCrates> {
         }
     }
 
-    @NotNull
-    public Map<String, CrateMenu> getMenuMap() {
+    public @NotNull Map<String, CrateMenu> getMenuMap() {
         return menuMap;
     }
 
-    @Nullable
-    public CrateMenu getMenuById(@NotNull String id) {
+    public @Nullable CrateMenu getMenuById(@NotNull String id) {
         return this.getMenuMap().get(id.toLowerCase());
     }
 
-    @NotNull
-    public Collection<CrateMenu> getMenus() {
+    public @NotNull Collection<CrateMenu> getMenus() {
         return this.getMenuMap().values();
     }
 
-    @NotNull
-    public List<String> getMenuIds() {
+    public @NotNull List<String> getMenuIds() {
         return new ArrayList<>(this.getMenuMap().keySet());
     }
 }
