@@ -43,7 +43,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
-    compileOnly("cc.mewcraft:MewCore:5.13.1")
+    compileOnly("cc.mewcraft:mewcore:5.16.1")
     compileOnly("su.nexmedia:NexEngine:2.2.10")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
     compileOnly("com.github.decentsoftware-eu:decentholograms:2.2.5")
