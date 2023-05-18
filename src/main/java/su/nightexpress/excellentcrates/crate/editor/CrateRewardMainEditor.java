@@ -216,7 +216,7 @@ public class CrateRewardMainEditor extends EditorMenu<ExcellentCrates, CrateRewa
         @Override
         public void onReady(@NotNull MenuViewer viewer, @NotNull Inventory inventory) {
             super.onReady(viewer, inventory);
-            inventory.setContents(this.reward.getItems().stream().map(ItemStack::new).toList().toArray(new ItemStack[0]));
+            inventory.setContents(this.reward.getItems().stream().map(ItemStack::clone).toList().toArray(ItemStack[]::new));
         }
 
         @Override
