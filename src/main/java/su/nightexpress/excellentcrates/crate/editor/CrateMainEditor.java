@@ -262,7 +262,7 @@ public class CrateMainEditor extends EditorMenu<ExcellentCrates, Crate> implemen
         });
 
         this.getItems().forEach(menuItem -> {
-            menuItem.getOptions().applyDisplayModifier((viewer, item) -> ItemUtil.replaceNameAndLore(item, crate.replacePlaceholders()));
+            menuItem.getOptions().addDisplayModifier((viewer, item) -> ItemUtil.replaceNameAndLore(item, crate.replacePlaceholders()));
         });
 
         this.registerListeners();
