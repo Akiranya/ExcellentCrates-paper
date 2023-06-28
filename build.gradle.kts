@@ -1,14 +1,16 @@
 plugins {
-    val version = "1.0.0"
-    id("cc.mewcraft.java-conventions") version version
-    id("cc.mewcraft.repository-conventions") version version
-    id("cc.mewcraft.publishing-conventions") version version
-    alias(libs.plugins.indra)
+    val mewcraft = "1.0.0"
+    id("cc.mewcraft.java-conventions") version mewcraft
+    id("cc.mewcraft.repository-conventions") version mewcraft
+    id("cc.mewcraft.publishing-conventions") version mewcraft
+    id("cc.mewcraft.deploy-conventions") version mewcraft
+    id("cc.mewcraft.paper-plugins") version mewcraft
 }
+
+project.ext.set("name", "ExcellentCrates")
 
 group = "su.nightexpress.excellentcrates"
 version = "4.2.0"
-description = "ExcellentCrates"
 
 repositories {
     maven("https://jitpack.io") {
@@ -60,34 +62,3 @@ dependencies {
         "PlaceholderAPI"
     )
 }*/
-
-tasks {
-    jar {
-        archiveFileName.set("ExcellentCrates-${project.version}.jar")
-        archiveClassifier.set("")
-        destinationDirectory.set(file("$rootDir"))
-    }
-    processResources {
-        filesMatching("**/paper-plugin.yml") {
-            expand(mapOf(
-                "version" to "${project.version}",
-                "description" to project.description
-            ))
-        }
-    }
-    register("deployJar") {
-        doLast {
-            exec {
-                commandLine("rsync", jar.get().archiveFile.get().asFile.absoluteFile, "dev:data/dev/jar")
-            }
-        }
-    }
-    register("deployJarFresh") {
-        dependsOn(build)
-        finalizedBy(named("deployJar"))
-    }
-}
-
-indra {
-    javaVersions().target(17)
-}

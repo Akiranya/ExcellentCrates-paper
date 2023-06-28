@@ -3,7 +3,7 @@ main: su.nightexpress.excellentcrates.ExcellentCrates
 version: ${version}
 api-version: 1.19
 authors: [ NightExpress, Nailm ]
-description: ${description}
+description: Fully customizable crates with rewards. Enjoy.
 load-before: [ ]
 load-after:
   - name: NexEngine
