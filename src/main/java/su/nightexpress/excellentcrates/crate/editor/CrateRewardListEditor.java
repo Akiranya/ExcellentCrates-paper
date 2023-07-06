@@ -8,7 +8,6 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.nexmedia.engine.api.menu.AutoPaged;
-import su.nexmedia.engine.api.menu.click.ClickType;
 import su.nexmedia.engine.api.menu.click.ItemClick;
 import su.nexmedia.engine.api.menu.impl.EditorMenu;
 import su.nexmedia.engine.api.menu.impl.MenuOptions;
@@ -35,7 +34,7 @@ public class CrateRewardListEditor extends EditorMenu<ExcellentCrates, Crate> im
         super(crate.plugin(), crate, Config.EDITOR_TITLE_CRATE.get(), 45);
 
         this.addReturn(40).setClick((viewer, event) -> {
-            this.plugin.runTask(task -> crate.getEditor().open(viewer.getPlayer(), 1));
+            this.plugin.runTask(task -> crate.getEditor().open(viewer.getPlayer(), 1)); // Mewcraft - fix typo
         });
         this.addNextPage(44);
         this.addPreviousPage(36);
@@ -43,13 +42,13 @@ public class CrateRewardListEditor extends EditorMenu<ExcellentCrates, Crate> im
         this.addCreation(EditorLocales.REWARD_CREATE, 42).setClick((viewer, event) -> {
             ItemStack cursor = event.getCursor();
             if (cursor != null && !cursor.getType().isAir()) {
-                String id = StringUtil.lowerCaseUnderscore(ComponentUtil.asMiniMessage(ItemUtil.getName(cursor)));
+                String id = StringUtil.lowerCaseUnderscore(ComponentUtil.asMiniMessage(ItemUtil.getName(cursor))); // Mewcraft
                 int count = 0;
                 while (crate.getReward(count == 0 ? id : id + count) != null) {
                     count++;
                 }
                 CrateReward reward = new CrateReward(crate, count == 0 ? id : id + count);
-                reward.setName(ComponentUtil.asMiniMessage(ItemUtil.getName(cursor)));
+                reward.setName(ComponentUtil.asMiniMessage(ItemUtil.getName(cursor))); // Mewcraft
                 reward.getItems().add(new ItemStack(cursor));
                 reward.setPreview(cursor);
                 crate.addReward(reward);
@@ -58,8 +57,8 @@ public class CrateRewardListEditor extends EditorMenu<ExcellentCrates, Crate> im
                 return;
             }
 
-            this.startEdit(viewer.getPlayer(), plugin.getMessage(Lang.EDITOR_REWARD_ENTER_ID), chat -> {
-                String id = StringUtil.lowerCaseUnderscore(chat.getMessage());
+            this.handleInput(viewer, Lang.EDITOR_REWARD_ENTER_ID, wrapper -> {
+                String id = StringUtil.lowerCaseUnderscore(wrapper.getTextRaw());
                 if (crate.getReward(id) != null) {
                     EditorManager.error(viewer.getPlayer(), plugin.getMessage(Lang.EDITOR_REWARD_ERROR_CREATE_EXIST).getLocalized());
                     return false;
@@ -72,14 +71,14 @@ public class CrateRewardListEditor extends EditorMenu<ExcellentCrates, Crate> im
 
         this.addItem(Material.HOPPER, EditorLocales.REWARD_SORT, 38).setClick((viewer, event) -> {
             Comparator<CrateReward> comparator;
-            ClickType type = ClickType.from(event);
-            if (type == ClickType.NUMBER_1) {
+            su.nexmedia.engine.api.menu.click.ClickType type = su.nexmedia.engine.api.menu.click.ClickType.from(event);
+            if (type == su.nexmedia.engine.api.menu.click.ClickType.NUMBER_1) {
                 comparator = Comparator.comparingDouble(CrateReward::getChance).reversed();
-            } else if (type == ClickType.NUMBER_2) {
+            } else if (type == su.nexmedia.engine.api.menu.click.ClickType.NUMBER_2) {
                 comparator = Comparator.comparing(r -> r.getPreview().getType().name());
-            } else if (type == ClickType.NUMBER_3) {
+            } else if (type == su.nexmedia.engine.api.menu.click.ClickType.NUMBER_3) {
                 comparator = Comparator.comparing(r -> ComponentUtil.asPlainText(ItemUtil.getName(r.getPreview())));
-            } else if (type == ClickType.NUMBER_4) {
+            } else if (type == su.nexmedia.engine.api.menu.click.ClickType.NUMBER_4) {
                 comparator = Comparator.comparingDouble((CrateReward r) -> r.getRarity().getChance()).reversed();
             } else return;
             crate.setRewards(crate.getRewards().stream().sorted(comparator).toList());
@@ -104,29 +103,29 @@ public class CrateRewardListEditor extends EditorMenu<ExcellentCrates, Crate> im
     }
 
     @Override
-    public @NotNull List<CrateReward> getObjects(@NotNull Player player) {
+    @NotNull
+    public List<CrateReward> getObjects(@NotNull Player player) {
         return new ArrayList<>(this.object.getRewards());
     }
 
     @Override
-    public @NotNull Comparator<CrateReward> getObjectSorter() {
-        return ((o1, o2) -> 0);
-    }
-
-    @Override
-    public @NotNull ItemStack getObjectStack(@NotNull Player player, @NotNull CrateReward reward) {
+    @NotNull
+    public ItemStack getObjectStack(@NotNull Player player, @NotNull CrateReward reward) {
         ItemStack item = new ItemStack(reward.getPreview());
+        // Mewcraft start
         item.editMeta(meta -> {
             meta.addItemFlags(ItemFlag.values());
             meta.displayName(ComponentUtil.asComponent(EditorLocales.REWARD_OBJECT.getLocalizedName()));
             meta.lore(ComponentUtil.asComponent(EditorLocales.REWARD_OBJECT.getLocalizedLore()));
             ItemUtil.replaceNameAndLore(meta, reward.replacePlaceholders());
         });
+        // Mewcraft end
         return item;
     }
 
     @Override
-    public @NotNull ItemClick getObjectClick(@NotNull CrateReward reward) {
+    @NotNull
+    public ItemClick getObjectClick(@NotNull CrateReward reward) {
         return (viewer, event) -> {
             Player player = viewer.getPlayer();
             if (event.getClick() == org.bukkit.event.inventory.ClickType.DROP) {

@@ -6,30 +6,29 @@ import su.nexmedia.engine.api.config.JYML;
 import su.nexmedia.engine.api.manager.AbstractManager;
 import su.nightexpress.excellentcrates.ExcellentCrates;
 import su.nightexpress.excellentcrates.config.Config;
+import su.nightexpress.excellentcrates.menu.impl.MenuConfig;
 
 import java.util.*;
 
 public class MenuManager extends AbstractManager<ExcellentCrates> {
 
-    private Map<String, CrateMenu> menuMap;
+    private final Map<String, MenuConfig> menuMap;
 
     public MenuManager(@NotNull ExcellentCrates plugin) {
         super(plugin);
+        this.menuMap = new HashMap<>();
     }
 
     @Override
     public void onLoad() {
-        this.menuMap = new HashMap<>();
         this.plugin.getConfigManager().extractResources(Config.DIR_MENUS);
 
         for (JYML cfg : JYML.loadAll(plugin.getDataFolder() + Config.DIR_MENUS, true)) {
-            try {
-                CrateMenu menu = new CrateMenu(plugin, cfg);
+            MenuConfig menu = new MenuConfig(plugin, cfg);
+            if (menu.load()) {
                 this.getMenuMap().put(menu.getId(), menu);
-            } catch (Exception ex) {
-                plugin.error("Could not load crate menu: '" + cfg.getFile().getName() + "'");
-                ex.printStackTrace();
             }
+            else this.plugin.error("Menu not loaded: '" + cfg.getFile().getName() + "'!");
         }
 
         this.plugin.info("Loaded " + this.getMenuMap().size() + " crate menus.");
@@ -37,25 +36,27 @@ public class MenuManager extends AbstractManager<ExcellentCrates> {
 
     @Override
     public void onShutdown() {
-        if (this.menuMap != null) {
-            this.menuMap.values().forEach(CrateMenu::clear);
-            this.menuMap.clear();
-        }
+        this.getMenus().forEach(MenuConfig::clear);
+        this.getMenuMap().clear();
     }
 
-    public @NotNull Map<String, CrateMenu> getMenuMap() {
-        return menuMap;
+    @NotNull
+    public Map<String, MenuConfig> getMenuMap() {
+        return this.menuMap;
     }
 
-    public @Nullable CrateMenu getMenuById(@NotNull String id) {
+    @Nullable
+    public MenuConfig getMenuById(@NotNull String id) {
         return this.getMenuMap().get(id.toLowerCase());
     }
 
-    public @NotNull Collection<CrateMenu> getMenus() {
+    @NotNull
+    public Collection<MenuConfig> getMenus() {
         return this.getMenuMap().values();
     }
 
-    public @NotNull List<String> getMenuIds() {
+    @NotNull
+    public List<String> getMenuIds() {
         return new ArrayList<>(this.getMenuMap().keySet());
     }
 }

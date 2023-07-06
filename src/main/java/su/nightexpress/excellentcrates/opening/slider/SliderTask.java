@@ -51,12 +51,10 @@ public class SliderTask extends OpeningTask {
         if (Rnd.chance(this.getParent().getStartChance())) {
             for (int count = 0; count < this.getParent().getWinSlots().length; count++) {
                 CrateReward reward = this.data.getCrate().rollReward(this.data.getPlayer());
-                if (reward != null) {
-                    reward.give(this.data.getPlayer());
+                reward.give(this.data.getPlayer());
 
-                    CrateObtainRewardEvent rewardEvent = new CrateObtainRewardEvent(reward, this.getData().getPlayer());
-                    ExcellentCratesAPI.PLUGIN.getPluginManager().callEvent(rewardEvent);
-                }
+                CrateObtainRewardEvent rewardEvent = new CrateObtainRewardEvent(reward, this.getData().getPlayer());
+                ExcellentCratesAPI.PLUGIN.getPluginManager().callEvent(rewardEvent);
             }
         }
         return this.isStarted();
@@ -84,7 +82,6 @@ public class SliderTask extends OpeningTask {
 
         if (this.getParent().getSlotsMode() == SliderInfo.Mode.INHERITANCE) {
             CrateReward reward = this.data.getCrate().rollReward(this.data.getPlayer());
-            if (reward == null) return;
 
             ItemStack preview = reward.getPreview();
             PDCUtil.set(preview, Keys.REWARD_ID, reward.getId());
@@ -101,7 +98,6 @@ public class SliderTask extends OpeningTask {
         } else {
             for (int slot : slots) {
                 CrateReward reward = this.data.getCrate().rollReward(this.data.getPlayer());
-                if (reward == null) return;
 
                 ItemStack preview = reward.getPreview();
                 PDCUtil.set(preview, Keys.REWARD_ID, reward.getId());

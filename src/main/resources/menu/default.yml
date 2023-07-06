@@ -1,51 +1,46 @@
-Title: 'Crates Menu'
-Size: 36
+Title: Virtual Crates
+Size: 45
+Inventory_Type: CHEST
+Use_Mini_Message: false
 
-Crates:
-  virtual:
-    Item:
-      Material: PLAYER_HEAD
-      Head_Texture: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDI0ODZmMjg1OTE2OWM4YmZiNjZhNjg3YmNmNGM2OTkzNDE3ZjU4NGI1OGJiZmRiMzM2NDY0ZDUyMDcxY2NkNyJ9fX0=
-      Name: '%crate_name%'
-      Lore:
-        - '%crate_item_lore%'
-        - '<gray>'
-        - '<blue>▸ <gray>You have: <blue>%user_keys% keys'
-        - '<blue>▸ <gray>Money Cost: <blue>$%crate_opening_cost_money%'
-        - '<blue>▸ <gray>Exp Cost: <blue>%crate_opening_cost_exp%'
-        - '<gray>'
-        - '<white>Left Click <gray>to preview'
-        - '<white>Right Click <gray>to open'
-    Slots: 13
+Crate:
+  Name: '<#9af7ff><b>%crate_name%'
+  Lore:
+    - '%crate_item_lore%'
+    - ''
+    - '<#9af7ff><b>Info:'
+    - '<#9af7ff>▪ <#ddecee>Your Keys: <#9af7ff>x%keys%'
+    - '<#9af7ff>▪ <#ddecee>Cooldown: <#9af7ff>%crate_opening_cooldown%'
+    - ''
+    - '<#a5ff9a><b>Actions:'
+    - '<#a5ff9a>▪ <#ddecee>Left Click: <#a5ff9a>Preview'
+    - '<#a5ff9a>▪ <#ddecee>Right Click: <#a5ff9a>Open'
+    - ''
+    - '<#f39aff><b>Purchase Keys:'
+    - '<#f39aff>▪ <#ddecee>Store: <#f39aff>http://samplesmp.com/store'
+  Slots:
+    emerald: 20
+    golden: 22
+    diamond: 24
 
 Content:
+  panes_1:
+    Priority: 0
+    Item:
+      Material: BLACK_STAINED_GLASS_PANE
+    Slots: 1,2,3,5,6,7,9,18,27,17,26,35,37,38,39,40,41,42,43
+
+  panes_2:
+    Priority: 0
+    Item:
+      Material: CYAN_STAINED_GLASS_PANE
+    Slots: 0,4,8,36,44
+
   exit:
+    Priority: 5
     Item:
-      Material: 'BARRIER'
-      Name: '<red><b>Close'
-    Slots: 31
+      Material: PLAYER_HEAD
+      Head_Texture: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2VkMWFiYTczZjYzOWY0YmM0MmJkNDgxOTZjNzE1MTk3YmUyNzEyYzNiOTYyYzk3ZWJmOWU5ZWQ4ZWZhMDI1In19fQ==
+      Name: '<#ff5733>(✕) <b>Exit'
+    Slots: 40
     Type: CLOSE
-
-  info:
-    Item:
-      Material: 'BOOK'
-      Name: '<yellow><u>What is it?'
-      Lore:
-        - '<gold>This is special crates menu,'
-        - '<gold>where you can open creates using'
-        - '<gold>virtual keys, which you can buy'
-        - '<gold>in our store.'
-    Slots: 28
-    Type: NONE
-
-  store:
-    Item:
-      Material: 'EMERALD'
-      Name: '<green><u>Store'
-      Lore:
-        - '<light_purple>Buy crate keys in our store'
-        - '<light_purple>and use them in this menu!'
-        - '<gray>'
-        - '<aqua>Our Store: <green>www.store.mycraft.com'
-    Slots: 34
-    Type: NONE

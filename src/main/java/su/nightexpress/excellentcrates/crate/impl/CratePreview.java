@@ -21,7 +21,6 @@ import su.nightexpress.excellentcrates.data.impl.CrateUser;
 import su.nightexpress.excellentcrates.data.impl.UserRewardData;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class CratePreview extends ConfigMenu<ExcellentCrates> implements AutoPaged<CrateReward> {
@@ -30,15 +29,12 @@ public class CratePreview extends ConfigMenu<ExcellentCrates> implements AutoPag
     private static final String PLACEHOLDER_WIN_LIMIT_COOLDOWN = "%win_limit_cooldown%";
     private static final String PLACEHOLDER_WIN_LIMIT_DRAINED = "%win_limit_drained%";
 
-    @Deprecated private static final String USER_REWARD_WIN_LIMIT_AMOUNT_LEFT = "%user_reward_win_limit_amount_left%";
-    @Deprecated private static final String USER_REWARD_WIN_LIMIT_EXPIRE_IN = "%user_reward_win_limit_expire_in%";
-
     private final Crate crate;
     private final int[] rewardSlots;
     private final String rewardName;
     private final List<String> rewardLore;
     private final List<String> rewardLoreLimitAmount;
-    private final List<String> rewardLoreLimitCooldown;
+    private final List<String> rewardLoreLimitCooldown; // Mewcraft - fix typo
     private final List<String> rewardLoreLimitDrained;
     private final boolean hideDrainedRewards;
 
@@ -48,17 +44,18 @@ public class CratePreview extends ConfigMenu<ExcellentCrates> implements AutoPag
 
         this.hideDrainedRewards = cfg.getBoolean("Reward.Hide_Drained_Rewards");
         this.rewardSlots = cfg.getIntArray("Reward.Slots");
-        this.rewardName = cfg.getString("Reward.Name", Placeholders.REWARD_PREVIEW_NAME);
+        this.rewardName = cfg.getString("Reward.Name", Placeholders.REWARD_PREVIEW_NAME); // Mewcraft - no legacy color
         this.rewardLore = cfg.getStringList("Reward.Lore.Default");
         this.rewardLoreLimitAmount = cfg.getStringList("Reward.Lore.Win_Limit.Amount");
-        this.rewardLoreLimitCooldown = cfg.getStringList("Reward.Lore.Win_Limit.Cooldown");
+        this.rewardLoreLimitCooldown = cfg.getStringList("Reward.Lore.Win_Limit.Cooldown"); // Mewcraft - fix type
         this.rewardLoreLimitDrained = cfg.getStringList("Reward.Lore.Win_Limit.Drained");
 
         this.registerHandler(MenuItemType.class)
-            .addClick(MenuItemType.CLOSE, (viewer, event) -> this.plugin.runTask(task -> viewer.getPlayer().closeInventory()))
+            .addClick(MenuItemType.CLOSE, (viewer, event) -> {
+                this.plugin.runTask(task -> viewer.getPlayer().closeInventory());
+            })
             .addClick(MenuItemType.PAGE_NEXT, ClickHandler.forNextPage(this))
-            .addClick(MenuItemType.PAGE_PREVIOUS, ClickHandler.forPreviousPage(this))
-        ;
+            .addClick(MenuItemType.PAGE_PREVIOUS, ClickHandler.forPreviousPage(this));
 
         this.load();
     }
@@ -76,17 +73,14 @@ public class CratePreview extends ConfigMenu<ExcellentCrates> implements AutoPag
     }
 
     @Override
-    public @NotNull List<CrateReward> getObjects(@NotNull Player player) {
+    @NotNull
+    public List<CrateReward> getObjects(@NotNull Player player) {
         return new ArrayList<>(this.hideDrainedRewards ? crate.getRewards(player) : crate.getRewards());
     }
 
     @Override
-    public @NotNull Comparator<CrateReward> getObjectSorter() {
-        return ((o1, o2) -> 0);
-    }
-
-    @Override
-    public @NotNull ItemStack getObjectStack(@NotNull Player player, @NotNull CrateReward reward) {
+    @NotNull
+    public ItemStack getObjectStack(@NotNull Player player, @NotNull CrateReward reward) {
         ItemStack item = reward.getPreview();
         item.editMeta(meta -> {
             CrateUser user = plugin.getUserManager().getUserData(player);
@@ -104,10 +98,8 @@ public class CratePreview extends ConfigMenu<ExcellentCrates> implements AutoPag
             lore = StringUtil.replacePlaceholderList(PLACEHOLDER_WIN_LIMIT_COOLDOWN, lore, this.rewardLoreLimitCooldown);
             lore = StringUtil.replacePlaceholderList(PLACEHOLDER_WIN_LIMIT_DRAINED, lore, this.rewardLoreLimitDrained);
 
-            //region Fix placeholder list
+            // Mewcraft - fix placeholder list
             lore = StringUtil.replacePlaceholderList(Placeholders.REWARD_PREVIEW_LORE, lore, ComponentUtil.asMiniMessage(ItemUtil.getLore(reward.getPreview())));
-            //endregion
-
             lore = StringUtil.compressEmptyLines(lore);
 
             int amountLeft = rewardData == null ? reward.getWinLimitAmount() : reward.getWinLimitAmount() - rewardData.getAmount();
@@ -116,21 +108,24 @@ public class CratePreview extends ConfigMenu<ExcellentCrates> implements AutoPag
             lore.replaceAll(str -> str
                 .replace(Placeholders.GENERIC_AMOUNT, String.valueOf(amountLeft))
                 .replace(Placeholders.GENERIC_TIME, TimeUtil.formatTimeLeft(expireIn))
-                .replace(USER_REWARD_WIN_LIMIT_AMOUNT_LEFT, String.valueOf(amountLeft))
-                .replace(USER_REWARD_WIN_LIMIT_EXPIRE_IN, TimeUtil.formatTimeLeft(expireIn))
             );
 
+            // Mewcraft start
             meta.displayName(ComponentUtil.asComponent(this.rewardName));
             meta.lore(ComponentUtil.asComponent(lore));
 
             ItemUtil.replaceNameAndLore(meta, reward.replacePlaceholders());
             ItemUtil.replaceNameAndLore(meta, this.crate.replacePlaceholders());
+            // Mewcraft end
         });
         return item;
     }
 
     @Override
-    public @NotNull ItemClick getObjectClick(@NotNull CrateReward reward) {
-        return (viewer, event) -> {};
+    @NotNull
+    public ItemClick getObjectClick(@NotNull CrateReward reward) {
+        return (viewer, event) -> {
+
+        };
     }
 }

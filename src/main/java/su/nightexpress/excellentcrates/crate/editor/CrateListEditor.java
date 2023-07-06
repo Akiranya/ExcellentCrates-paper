@@ -20,7 +20,6 @@ import su.nightexpress.excellentcrates.crate.CrateManager;
 import su.nightexpress.excellentcrates.crate.impl.Crate;
 import su.nightexpress.excellentcrates.editor.EditorLocales;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -30,17 +29,16 @@ public class CrateListEditor extends EditorMenu<ExcellentCrates, CrateManager> i
     public CrateListEditor(@NotNull CrateManager crateManager) {
         super(crateManager.plugin(), crateManager, Config.EDITOR_TITLE_CRATE.get(), 45);
 
-        this.addReturn(39).setClick((viewer2, event) -> {
-            this.plugin.runTask(task -> this.plugin.getEditor().open(viewer2.getPlayer(), 1));
+        this.addReturn(39).setClick((viewer, event) -> {
+            this.plugin.runTask(task -> this.plugin.getEditor().open(viewer.getPlayer(), 1));
         });
         this.addNextPage(44);
         this.addPreviousPage(36);
 
-        this.addCreation(EditorLocales.CRATE_CREATE, 41).setClick((viewer2, event) -> {
-            Player player = viewer2.getPlayer();
-            this.startEdit(player, plugin.getMessage(Lang.EDITOR_CRATE_ENTER_ID), chat -> {
-                if (!this.object.create(StringUtil.lowerCaseUnderscore(chat.getMessage()))) {
-                    EditorManager.error(player, plugin.getMessage(Lang.EDITOR_CRATE_ERROR_CREATE_EXISTS).getLocalized());
+        this.addCreation(EditorLocales.CRATE_CREATE, 41).setClick((viewer, event) -> {
+            this.handleInput(viewer, Lang.EDITOR_CRATE_ENTER_ID, wrapper -> {
+                if (!this.object.create(StringUtil.lowerCaseUnderscore(wrapper.getTextRaw()))) {
+                    EditorManager.error(viewer.getPlayer(), plugin.getMessage(Lang.CRATE_ERROR_EXISTS).getLocalized());
                     return false;
                 }
                 return true;
@@ -60,29 +58,29 @@ public class CrateListEditor extends EditorMenu<ExcellentCrates, CrateManager> i
     }
 
     @Override
-    public @NotNull List<Crate> getObjects(@NotNull Player player) {
-        return new ArrayList<>(this.object.getCrateMap());
+    @NotNull
+    public List<Crate> getObjects(@NotNull Player player) {
+        return this.object.getCrates().stream().sorted(Comparator.comparing(Crate::getId)).toList();
     }
 
     @Override
-    public @NotNull Comparator<Crate> getObjectSorter() {
-        return Comparator.comparing(Crate::getId);
-    }
-
-    @Override
-    public @NotNull ItemStack getObjectStack(@NotNull Player player, @NotNull Crate crate) {
+    @NotNull
+    public ItemStack getObjectStack(@NotNull Player player, @NotNull Crate crate) {
         ItemStack item = new ItemStack(crate.getItem());
+        // Mewcraft start
         item.editMeta(meta -> {
             meta.addItemFlags(ItemFlag.values());
             meta.displayName(ComponentUtil.asComponent(EditorLocales.CRATE_OBJECT.getLocalizedName()));
             meta.lore(ComponentUtil.asComponent(EditorLocales.CRATE_OBJECT.getLocalizedLore()));
             ItemUtil.replaceNameAndLore(meta, crate.replacePlaceholders());
         });
+        // Mewcraft end
         return item;
     }
 
     @Override
-    public @NotNull ItemClick getObjectClick(@NotNull Crate crate) {
+    @NotNull
+    public ItemClick getObjectClick(@NotNull Crate crate) {
         return (viewer, event) -> {
             if (event.isShiftClick() && event.isRightClick()) {
                 this.object.delete(crate);

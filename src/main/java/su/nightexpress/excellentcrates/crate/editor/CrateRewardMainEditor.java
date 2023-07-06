@@ -14,7 +14,9 @@ import su.nexmedia.engine.api.menu.impl.EditorMenu;
 import su.nexmedia.engine.api.menu.impl.Menu;
 import su.nexmedia.engine.api.menu.impl.MenuViewer;
 import su.nexmedia.engine.editor.EditorManager;
-import su.nexmedia.engine.utils.*;
+import su.nexmedia.engine.utils.ComponentUtil;
+import su.nexmedia.engine.utils.ItemUtil;
+import su.nexmedia.engine.utils.PlayerUtil;
 import su.nightexpress.excellentcrates.ExcellentCrates;
 import su.nightexpress.excellentcrates.Placeholders;
 import su.nightexpress.excellentcrates.config.Config;
@@ -34,7 +36,7 @@ public class CrateRewardMainEditor extends EditorMenu<ExcellentCrates, CrateRewa
         Crate crate = reward.getCrate();
 
         this.addReturn(40).setClick((viewer, event) -> {
-            this.plugin.runTask(task -> crate.getEditor().getEditorRewards().open(viewer.getPlayer(), 1));
+            this.plugin.runTask(task -> crate.getEditor().getEditorRewards().open(viewer.getPlayer(), 1)); // Mewcraft - fix typo
         });
 
         this.addItem(Material.ITEM_FRAME, EditorLocales.REWARD_PREVIEW, 4).setClick((viewer, event) -> {
@@ -52,29 +54,31 @@ public class CrateRewardMainEditor extends EditorMenu<ExcellentCrates, CrateRewa
         }).getOptions().setDisplayModifier(((viewer, item) -> {
             item.setType(reward.getPreview().getType());
             item.setItemMeta(reward.getPreview().getItemMeta());
+            // Mewcraft start
             item.editMeta(meta -> {
                 meta.displayName(ComponentUtil.asComponent(EditorLocales.REWARD_PREVIEW.getLocalizedName()));
                 meta.lore(ComponentUtil.asComponent(EditorLocales.REWARD_PREVIEW.getLocalizedLore()));
                 meta.addItemFlags(ItemFlag.values());
             });
+            // Mewcraft end
         }));
 
         this.addItem(Material.NAME_TAG, EditorLocales.REWARD_NAME, 19).setClick((viewer, event) -> {
             if (event.isRightClick()) {
-                reward.setName(ComponentUtil.asMiniMessage(ItemUtil.getName(reward.getPreview())));
+                reward.setName(ComponentUtil.asMiniMessage(ItemUtil.getName(reward.getPreview()))); // Mewcraft
                 this.save(viewer);
                 return;
             }
             if (event.isShiftClick() && event.isLeftClick()) {
                 ItemStack preview = reward.getPreview();
-                preview.editMeta(meta -> meta.displayName(ComponentUtil.asComponent(reward.getName())));
+                preview.editMeta(meta -> meta.displayName(ComponentUtil.asComponent(reward.getName()))); // Mewcraft
                 reward.setPreview(preview);
                 this.save(viewer);
                 return;
             }
 
-            this.startEdit(viewer.getPlayer(), plugin.getMessage(Lang.EDITOR_REWARD_ENTER_DISPLAY_NAME), chat -> {
-                reward.setName(chat.getMessage());
+            this.handleInput(viewer, Lang.EDITOR_ENTER_DISPLAY_NAME, wrapper -> {
+                reward.setName(wrapper.getText());
                 crate.save();
                 return true;
             });
@@ -86,8 +90,8 @@ public class CrateRewardMainEditor extends EditorMenu<ExcellentCrates, CrateRewa
         });
 
         this.addItem(Material.COMPARATOR, EditorLocales.REWARD_CHANCE, 21).setClick((viewer, event) -> {
-            this.startEdit(viewer.getPlayer(), plugin.getMessage(Lang.EDITOR_REWARD_ENTER_CHANCE), chat -> {
-                reward.setChance(StringUtil.getDouble(Colorizer.strip(chat.getMessage()), 0D));
+            this.handleInput(viewer, Lang.EDITOR_REWARD_ENTER_CHANCE, wrapper -> {
+                reward.setChance(wrapper.asDouble());
                 crate.save();
                 return true;
             });
@@ -95,8 +99,8 @@ public class CrateRewardMainEditor extends EditorMenu<ExcellentCrates, CrateRewa
 
         this.addItem(Material.FISHING_ROD, EditorLocales.REWARD_RARITY, 13).setClick((viewer, event) -> {
             EditorManager.suggestValues(viewer.getPlayer(), plugin.getCrateManager().getRarityMap().keySet(), true);
-            this.startEdit(viewer.getPlayer(), plugin.getMessage(Lang.EDITOR_REWARD_ENTER_RARITY), chat -> {
-                Rarity rarity = this.plugin.getCrateManager().getRarity(chat.getMessage());
+            this.handleInput(viewer, Lang.EDITOR_REWARD_ENTER_RARITY, wrapper -> {
+                Rarity rarity = this.plugin.getCrateManager().getRarity(wrapper.getTextRaw());
                 if (rarity == null) return true;
 
                 reward.setRarity(rarity);
@@ -119,14 +123,14 @@ public class CrateRewardMainEditor extends EditorMenu<ExcellentCrates, CrateRewa
             }
 
             if (event.isLeftClick()) {
-                this.startEdit(viewer.getPlayer(), plugin.getMessage(Lang.EDITOR_REWARD_ENTER_WIN_LIMIT_AMOUNT), chat -> {
-                    reward.setWinLimitAmount(StringUtil.getInteger(chat.getMessage(), -1, true));
+                this.handleInput(viewer, Lang.EDITOR_REWARD_ENTER_WIN_LIMIT_AMOUNT, wrapper -> {
+                    reward.setWinLimitAmount(wrapper.asAnyInt(-1));
                     crate.save();
                     return true;
                 });
             } else {
-                this.startEdit(viewer.getPlayer(), plugin.getMessage(Lang.EDITOR_REWARD_ENTER_WIN_LIMIT_COOLDOWN), chat -> {
-                    reward.setWinLimitCooldown(StringUtil.getInteger(chat.getMessage(), 0, true));
+                this.handleInput(viewer, Lang.EDITOR_REWARD_ENTER_WIN_LIMIT_COOLDOWN, wrapper -> {
+                    reward.setWinLimitCooldown(wrapper.asAnyInt(0));
                     crate.save();
                     return true;
                 });
@@ -139,17 +143,17 @@ public class CrateRewardMainEditor extends EditorMenu<ExcellentCrates, CrateRewa
                 this.save(viewer);
                 return;
             }
-            this.startEdit(viewer.getPlayer(), plugin.getMessage(Lang.EDITOR_REWARD_ENTER_COMMAND), chat -> {
-                reward.getCommands().add(Colorizer.strip(chat.getMessage()));
+            this.handleInput(viewer, Lang.EDITOR_REWARD_ENTER_COMMAND, wrapper -> {
+                reward.getCommands().add(wrapper.getText());
                 crate.save();
                 return true;
             });
+            // Mewcraft start - fix placeholder list
         }).getOptions().setDisplayModifier((viewer, item) -> item.editMeta(meta -> {
-            //region Fix placeholder list
             List<Component> commands = this.object.getCommands().stream().map(line -> Component.text(line).color(NamedTextColor.WHITE).asComponent()).toList();
             ItemUtil.replacePlaceholderListComponent(meta, Placeholders.REWARD_COMMANDS, commands, true);
-            //endregion
         }));
+        // Mewcraft end
 
         this.addItem(Material.CHEST_MINECART, EditorLocales.REWARD_ITEMS, 24).setClick((viewer, event) -> {
             new ContentEditor(reward).open(viewer.getPlayer(), 1);
@@ -161,21 +165,21 @@ public class CrateRewardMainEditor extends EditorMenu<ExcellentCrates, CrateRewa
                 this.save(viewer);
                 return;
             }
-            this.startEdit(viewer.getPlayer(), plugin.getMessage(Lang.EDITOR_REWARD_ENTER_COMMAND), chat -> {
-                reward.getIgnoredForPermissions().add(Colorizer.strip(chat.getMessage()));
+            this.handleInput(viewer, Lang.EDITOR_REWARD_ENTER_COMMAND, wrapper -> {
+                reward.getIgnoredForPermissions().add(wrapper.getTextRaw());
                 crate.save();
                 return true;
             });
+            // Mewcraft start - fix placeholder list
         }).getOptions().setDisplayModifier((viewer, item) -> item.editMeta(meta -> {
-            //region Fix placeholder list
             List<Component> permissions = this.object.getIgnoredForPermissions().stream().map(line -> Component.text(line).color(NamedTextColor.WHITE).asComponent()).toList();
             ItemUtil.replacePlaceholderListComponent(meta, Placeholders.REWARD_IGNORED_FOR_PERMISSIONS, permissions, true);
-            //endregion
         }));
+        // Mewcraft end
 
         this.getItems().forEach(menuItem -> {
             if (menuItem.getOptions().getDisplayModifier() == null) {
-                menuItem.getOptions().setDisplayModifier(((viewer, item) -> ItemUtil.replaceNameAndLore(item, reward.replacePlaceholders())));
+                menuItem.getOptions().setDisplayModifier(((viewer, item) -> ItemUtil.replaceNameAndLore(item, reward.replacePlaceholders()))); // Mewcraft
             }
         });
     }

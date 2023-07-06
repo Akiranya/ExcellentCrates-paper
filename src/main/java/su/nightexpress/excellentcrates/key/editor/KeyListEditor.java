@@ -20,7 +20,6 @@ import su.nightexpress.excellentcrates.editor.EditorLocales;
 import su.nightexpress.excellentcrates.key.CrateKey;
 import su.nightexpress.excellentcrates.key.KeyManager;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -37,9 +36,9 @@ public class KeyListEditor extends EditorMenu<ExcellentCrates, KeyManager> imple
         this.addPreviousPage(36);
 
         this.addCreation(EditorLocales.KEY_CREATE, 41).setClick((viewer, event) -> {
-            this.startEdit(viewer.getPlayer(), plugin.getMessage(Lang.EDITOR_CRATE_ENTER_ID), chat -> {
-                if (!keyManager.create(StringUtil.lowerCaseUnderscore(chat.getMessage()))) {
-                    EditorManager.error(viewer.getPlayer(), plugin.getMessage(Lang.EDITOR_KEY_ERROR_CREATE_EXIST).getLocalized());
+            this.handleInput(viewer, Lang.EDITOR_CRATE_ENTER_ID, wrapper -> {
+                if (!keyManager.create(StringUtil.lowerCaseUnderscore(wrapper.getTextRaw()))) {
+                    EditorManager.error(viewer.getPlayer(), plugin.getMessage(Lang.CRATE_KEY_ERROR_EXISTS).getLocalized());
                     return false;
                 }
                 return true;
@@ -59,29 +58,29 @@ public class KeyListEditor extends EditorMenu<ExcellentCrates, KeyManager> imple
     }
 
     @Override
-    public @NotNull List<CrateKey> getObjects(@NotNull Player player) {
-        return new ArrayList<>(plugin.getKeyManager().getKeys());
+    @NotNull
+    public List<CrateKey> getObjects(@NotNull Player player) {
+        return plugin.getKeyManager().getKeys().stream().sorted(Comparator.comparing(CrateKey::getId)).toList();
     }
 
     @Override
-    public @NotNull Comparator<CrateKey> getObjectSorter() {
-        return Comparator.comparing(CrateKey::getId);
-    }
-
-    @Override
-    public @NotNull ItemStack getObjectStack(@NotNull Player player, @NotNull CrateKey key) {
+    @NotNull
+    public ItemStack getObjectStack(@NotNull Player player, @NotNull CrateKey key) {
         ItemStack item = new ItemStack(key.getItem());
+        // Mewcraft start
         item.editMeta(meta -> {
             meta.addItemFlags(ItemFlag.values());
             meta.displayName(ComponentUtil.asComponent(EditorLocales.KEY_OBJECT.getLocalizedName()));
             meta.lore(ComponentUtil.asComponent(EditorLocales.KEY_OBJECT.getLocalizedLore()));
             ItemUtil.replaceNameAndLore(meta, key.replacePlaceholders());
         });
+        // Mewcraft
         return item;
     }
 
     @Override
-    public @NotNull ItemClick getObjectClick(@NotNull CrateKey key) {
+    @NotNull
+    public ItemClick getObjectClick(@NotNull CrateKey key) {
         return (viewer, event) -> {
             Player player = viewer.getPlayer();
             if (event.isRightClick() && event.isShiftClick()) {

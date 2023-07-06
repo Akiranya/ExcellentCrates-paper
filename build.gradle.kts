@@ -10,7 +10,7 @@ plugins {
 project.ext.set("name", "ExcellentCrates")
 
 group = "su.nightexpress.excellentcrates"
-version = "4.2.0"
+version = "4.3.3"
 
 repositories {
     maven("https://jitpack.io") {

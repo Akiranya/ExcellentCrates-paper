@@ -27,15 +27,15 @@ public class KeyMainEditor extends EditorMenu<ExcellentCrates, CrateKey> {
         });
 
         this.addItem(Material.NAME_TAG, EditorLocales.KEY_NAME, 20).setClick((viewer, event) -> {
-            this.startEdit(viewer.getPlayer(), plugin.getMessage(Lang.EDITOR_REWARD_ENTER_DISPLAY_NAME), chat -> {
-                crateKey.setName(chat.getMessage());
+            this.handleInput(viewer, Lang.EDITOR_ENTER_DISPLAY_NAME, wrapper -> {
+                crateKey.setName(wrapper.getText());
                 return true;
             });
         });
 
         this.addItem(Material.TRIPWIRE_HOOK, EditorLocales.KEY_ITEM, 22).setClick((viewer, event) -> {
             if (event.isRightClick()) {
-                PlayerUtil.addItem(viewer.getPlayer(), crateKey.getItem());
+                PlayerUtil.addItem(viewer.getPlayer(), crateKey.getRawItem());
                 return;
             }
 
@@ -46,13 +46,15 @@ public class KeyMainEditor extends EditorMenu<ExcellentCrates, CrateKey> {
             event.getView().setCursor(null);
             this.save(viewer);
         }).getOptions().setDisplayModifier(((viewer, item) -> {
-            item.setType(crateKey.getItem().getType());
-            item.setItemMeta(crateKey.getItem().getItemMeta());
+            item.setType(crateKey.getRawItem().getType());
+            item.setItemMeta(crateKey.getRawItem().getItemMeta());
+            // Mewcraft start
             item.editMeta(meta -> {
-                meta.addItemFlags(ItemFlag.values());
                 meta.displayName(ComponentUtil.asComponent(EditorLocales.KEY_ITEM.getLocalizedName()));
                 meta.lore(ComponentUtil.asComponent(EditorLocales.KEY_ITEM.getLocalizedLore()));
+                meta.addItemFlags(ItemFlag.values());
             });
+            // Mewcraft end
         }));
 
         this.addItem(Material.ENDER_PEARL, EditorLocales.KEY_VIRTUAL, 24).setClick((viewer, event) -> {
@@ -62,7 +64,7 @@ public class KeyMainEditor extends EditorMenu<ExcellentCrates, CrateKey> {
 
         this.getItems().forEach(menuItem -> {
             if (menuItem.getOptions().getDisplayModifier() == null) {
-                menuItem.getOptions().setDisplayModifier((viewer, item) -> ItemUtil.replaceNameAndLore(item, crateKey.replacePlaceholders()));
+                menuItem.getOptions().setDisplayModifier(((viewer, item) -> ItemUtil.replaceNameAndLore(item, crateKey.replacePlaceholders())));
             }
         });
     }
