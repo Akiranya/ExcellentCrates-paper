@@ -1,6 +1,6 @@
 package su.nightexpress.excellentcrates.crate.impl;
 
-import cc.mewcraft.mewcore.item.api.PluginItemRegistry;
+import cc.mewcraft.spatula.item.PluginItemRegistry;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -263,14 +263,14 @@ public class CrateReward implements ICleanable, Placeholder {
         ListIterator<ItemStack> it = this.items.listIterator();
         while (it.hasNext()) {
             ItemStack itemStack = it.next();
-            itemStack = PluginItemRegistry.get().refreshItemStack(itemStack);
+            itemStack = PluginItemRegistry.INSTANCE.refresh(itemStack);
             it.set(itemStack);
         }
         // Custom plugin item integration - end
     }
 
     public void addItem(@NotNull ItemStack item) {
-        this.items.add(PluginItemRegistry.get().refreshItemStack(item));
+        this.items.add(PluginItemRegistry.INSTANCE.refresh(item));
     }
 
     public void give(@NotNull Player player) {

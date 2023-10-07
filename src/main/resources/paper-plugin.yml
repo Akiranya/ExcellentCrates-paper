@@ -1,31 +1,33 @@
 name: ExcellentCrates
 main: su.nightexpress.excellentcrates.ExcellentCrates
 version: ${version}
-api-version: 1.19
-authors: [ NightExpress, Nailm ]
+api-version: '1.19'
+authors: [ NightExpress ]
+contributors: [ Nailm ]
 description: Fully customizable crates with rewards. Enjoy.
-load-before: [ ]
-load-after:
-  - name: NexEngine
 dependencies:
-  - name: NexEngine
-    required: true
-    bootstrap: false
-  - name: MewCore
-    required: true
-    bootstrap: false
-  - name: Vault
-    required: false
-    bootstrap: false
-  - name: PlaceholderAPI
-    required: false
-    bootstrap: false
-  - name: DecentHolograms
-    required: false
-    bootstrap: false
-  - name: HolographicDisplays
-    required: false
-    bootstrap: false
-  - name: Citizens
-    required: false
-    bootstrap: false
+  server:
+    NexEngine:
+      load: BEFORE
+      required: true
+      join-classpath: true
+    Vault:
+      load: OMIT
+      required: false
+      join-classpath: true
+    PlaceholderAPI:
+      load: OMIT
+      required: false
+      join-classpath: true
+    DecentHolograms:
+      load: OMIT
+      required: false
+      join-classpath: true
+    HolographicDisplays:
+      load: OMIT
+      required: false
+      join-classpath: true
+    Citizens:
+      load: OMIT
+      required: false
+      join-classpath: true
